@@ -1,0 +1,131 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[
+    {"id":"handle","type":"string","label":"@ da loja (tela final)","default":"@sua_marca"},
+    {"id":"cta","type":"string","label":"CTA da tela final","default":"Chama no Direct"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Sua Marca — Plantão de vendas</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #f6f1ea; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden; background: #f6f1ea;
+        color: #ffffff; font-family: "Montserrat", sans-serif;
+        --champ: #edd3a0; --champ-d: #b8935a; --ink: #1d1815; --cream: #f6f1ea; --sub: #5d5047;
+      }
+      .ico { width: 1em; height: 1em; flex: none; display: block; }
+
+      /* ---------- câmera: punch-in centrado no rosto ---------- */
+      #cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: %%ORIGIN%%; z-index: 0; }
+      #fala, #fim { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+
+      /* ---------- legenda: zona segura (até 1635 px, 120 px livres à direita) ---------- */
+      #caps-w { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+      .cg { position: absolute; left: 70px; width: 860px; top: %%CAP_Y%%px; transform: translateY(-50%);
+        display: flex; flex-direction: column; align-items: center; row-gap: 6px; }
+      .ln { display: flex; justify-content: center; column-gap: 0.26em; white-space: nowrap;
+        font-weight: 800; font-size: 64px; line-height: 1.1; letter-spacing: -0.005em; }
+      .cw { display: inline-block; color: #ffffff;
+        text-shadow: 0 0 2px rgba(20, 14, 10, 0.55), 0 2px 4px rgba(20, 14, 10, 0.4), 0 6px 24px rgba(20, 14, 10, 0.5); }
+      .cw.k { color: var(--champ); }
+      /* título (bloco grande) */
+      .cg.big { row-gap: 0; }
+      .cg.big .ln { font-size: 104px; line-height: 1.02; letter-spacing: 0.02em; text-transform: uppercase; }
+      .cg.big.mid .ln { font-size: 84px; }
+      .hair { width: 170px; height: 3px; border-radius: 2px; background: var(--champ); transform-origin: 50% 50%;
+        box-shadow: 0 2px 10px rgba(20, 14, 10, 0.35); }
+      .hair.t { margin-bottom: 26px; }
+      .hair.b { margin-top: 26px; }
+
+      /* ---------- tela final ---------- */
+      #end { position: absolute; inset: 0; z-index: 8; }
+      #veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(246, 241, 234, 0.70), rgba(246, 241, 234, 0.86)); }
+      #end-in { position: absolute; left: 60px; width: 900px; top: 640px; display: flex; flex-direction: column; align-items: center; color: var(--ink); text-align: center; }
+      #e-kick { font-weight: 600; font-size: 30px; letter-spacing: 0.42em; margin-right: -0.42em; color: #3a302a; }
+      #e-hair { width: 150px; height: 3px; border-radius: 2px; background: var(--champ-d); margin: 30px 0 34px; }
+      #e-title { font-weight: 800; font-size: 96px; line-height: 1.0; letter-spacing: -0.01em; color: var(--ink); }
+      #e-sub { margin-top: 26px; font-weight: 600; font-size: 36px; color: var(--sub); }
+      #e-cta { margin-top: 56px; display: inline-flex; align-items: center; gap: 20px; padding: 24px 46px 24px 34px; border-radius: 999px;
+        background: var(--ink); color: #f6e9cf; font-weight: 700; font-size: 44px; box-shadow: 0 22px 50px rgba(29, 24, 21, 0.28); }
+      #e-cta .ico { font-size: 52px; }
+      #e-handle { margin-top: 34px; font-weight: 700; font-size: 42px; color: var(--ink); letter-spacing: 0.01em; }
+      #e-note { margin-top: 16px; font-weight: 500; font-size: 28px; color: #6f6157; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="%%DUR%%" data-width="1080" data-height="1920" data-fps="30">
+      <div id="cam">
+        <video id="fala" class="clip" src="assets/footage/fala.mp4" data-start="0" data-duration="%%SPEECH%%" data-track-index="0" playsinline data-has-audio="true"></video>
+        <img id="fim" class="clip" src="assets/img/fim.jpg" alt="" data-start="%%SPEECH%%" data-duration="%%END_D%%" data-track-index="1" />
+      </div>
+
+      <!-- legenda: blocos de até 2 linhas, palavra entra no instante falado -->
+      <div id="caps-w" class="clip" data-start="0" data-duration="%%SPEECH%%" data-track-index="5">
+%%CAPS_DOM%%
+      </div>
+
+      <!-- tela final: CTA -->
+      <div id="end" class="clip" data-start="%%SPEECH%%" data-duration="%%END_D%%" data-track-index="6">
+        <div id="veil"></div>
+        <div id="end-in">
+          <div id="e-kick">SUA MARCA</div>
+          <div id="e-hair"></div>
+          <div id="e-title">Plantão<br />de vendas</div>
+          <div id="e-sub">domingos e fora do horário</div>
+          <div id="e-cta">%%CHAT%%<span data-var-text="cta">Chama no Direct</span></div>
+          <div id="e-handle" data-var-text="handle">@sua_marca</div>
+          <div id="e-note">conforme disponibilidade</div>
+        </div>
+      </div>
+
+      <audio id="bgm" src="assets/music/trilha.m4a" data-start="0" data-duration="%%DUR%%" data-track-index="10" data-volume="1"></audio>
+%%SFX%%
+    </div>
+    <script>
+      const D = %%DATA%%;
+      const tl = gsap.timeline({ paused: true });
+      const IR = { immediateRender: false };
+
+      // ---------- câmera: aberto 1.0 / médio 1.12 / close 1.28, troca seca a cada corte e a cada 1,5-2,5 s ----------
+      gsap.set("#cam", { scale: D.cam[0][1] });
+      tl.fromTo("#cam", { scale: D.cam[0][1] }, { scale: D.push, duration: D.cam[1][0], ease: "none" }, 0);  // gancho: push-in lento (o fromTo mais cedo define a base)
+      D.cam.slice(1).forEach(([t, s]) => tl.set("#cam", { scale: s }, t));
+
+      // ---------- legenda ----------
+      gsap.set([".cg", ".cw", ".hair"], { opacity: 0 });
+      D.caps.forEach((g, gi) => {
+        tl.set("#g" + gi, { opacity: 1 }, g.t0);
+        if (g.big) {
+          tl.fromTo("#g" + gi + " .hair", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.4, ease: "power2.out", ...IR }, g.t0);
+        }
+        g.lines.forEach((ln, li) => ln.forEach((w, wi) => {
+          const sel = "#w" + gi + "_" + li + "_" + wi;
+          if (g.big) tl.fromTo(sel, { opacity: 0, scale: 0.86, y: 14 }, { opacity: 1, scale: 1, y: 0, duration: 0.26, ease: "power3.out", ...IR }, w.t);
+          else if (w.k) tl.fromTo(sel, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.18, ease: "back.out(2)", ...IR }, w.t);
+          else tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out", ...IR }, w.t);
+        }));
+        tl.set("#g" + gi, { opacity: 0 }, g.t1);
+      });
+
+      // ---------- tela final: último quadro desfocado + véu claro, conteúdo entra em cascata ----------
+      const E = D.end;
+      gsap.set(["#veil", "#e-kick", "#e-hair", "#e-title", "#e-sub", "#e-cta", "#e-handle", "#e-note"], { opacity: 0 });
+      tl.fromTo("#fim", { filter: "blur(0px)" }, { filter: "blur(18px)", duration: 0.5, ease: "power2.out", ...IR }, E);
+      tl.fromTo("#cam", { scale: D.cam[D.cam.length - 1][1] }, { scale: D.cam[D.cam.length - 1][1] + 0.06, duration: D.dur - E, ease: "none", immediateRender: false }, E);
+      tl.fromTo("#veil", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out", ...IR }, E);
+      [["#e-kick", 0.06], ["#e-title", 0.12], ["#e-sub", 0.2]].forEach(([s, d]) =>
+        tl.fromTo(s, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", ...IR }, E + d));
+      tl.fromTo("#e-hair", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: "power2.out", ...IR }, E + 0.1);
+      tl.fromTo("#e-cta", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.36, ease: "back.out(1.7)", ...IR }, E + D.ctaAt);
+      tl.fromTo(["#e-handle", "#e-note"], { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", stagger: 0.06, ...IR }, E + D.ctaAt + 0.1);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

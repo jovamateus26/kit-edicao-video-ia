@@ -1,0 +1,17 @@
+# Fim de linha fixo por tipo: um clone no Windows (core.autocrlf=true) não pode trocar LF por CRLF nos scripts de
+# bash/Python, senão eles quebram no Git Bash ("$'\r': command not found").
+* text=auto
+*.sh text eol=lf
+*.py text eol=lf
+*.mjs text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+skills/proprias/edicao-video-falado/ferramentas/wh text eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.png binary
+*.jpg binary
+*.woff2 binary
+*.ttf binary

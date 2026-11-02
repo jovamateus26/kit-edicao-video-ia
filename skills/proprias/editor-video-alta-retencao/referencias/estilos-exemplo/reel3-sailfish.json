@@ -1,0 +1,63 @@
+{
+  "_sobre": "EXEMPLO de estilo (visual do Reel 3 Sailfish OS, 17/10/2026). Não é padrão: só vale se o prompt mandar usar este arquivo.",
+  "nome": "reel3-sailfish",
+  "cor": {
+    "preset": "studio"
+  },
+  "broll": {
+    "modo": "manual",
+    "duracao": 2.5,
+    "zoom_max": 1.1,
+    "dissolve": 0.2,
+    "prompt_sufixo": "high quality minimal photography, soft studio lighting, clean composition, neutral background, cinematic"
+  },
+  "legenda": {
+    "modelo": "caption-pill-karaoke",
+    "vars": {
+      "COLOR_ACTIVE": "#FFEA00",
+      "COLOR_INACTIVE": "#FFFFFF",
+      "FONT_FAMILY": "Poppins",
+      "PAUSE_THRESHOLD": 0.35
+    },
+    "case": "upper",
+    "group": {
+      "max_words": 3,
+      "max_chars": 20,
+      "pause": 0.35
+    },
+    "scale": 0.75,
+    "baseline_y": 1640,
+    "css": ".caption-pill { background: rgba(10, 12, 18, 0.82) !important; box-shadow: 0 10px 34px rgba(0,0,0,.45) !important; }",
+    "ass": {
+      "font": "Arial Black",
+      "primary": "&H00FFFFFF",
+      "active": "&H0000EAFF",
+      "outline": 3.5,
+      "shadow": 1.5,
+      "bold": 1,
+      "case": "upper"
+    }
+  },
+  "badges": {
+    "legibility": true
+  },
+  "motion": {
+    "in": {
+      "x": 120,
+      "y": 0,
+      "blur": 12,
+      "duration": 0.5,
+      "ease": "power4.out"
+    },
+    "out": {
+      "x": -120,
+      "y": 0,
+      "blur": 12,
+      "duration": 0.32,
+      "ease": "power4.in"
+    }
+  },
+  "restricoes": [
+    "sem barra fixa de progresso/capítulos no topo"
+  ]
+}

@@ -1,0 +1,255 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[
+    {"id":"quadro","type":"string","label":"Nome do quadro","default":"Nome do Quadro"},
+    {"id":"loja","type":"string","label":"@ da loja (tela final)","default":"@sua_marca"},
+    {"id":"handle","type":"string","label":"@ do Apresentador (tela final)","default":"@seu_perfil"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Nome do Quadro — Ep. 01</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Noto Color Emoji"; src: local("Noto Color Emoji"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #f6f1ea; }
+      /* meio-termo: cards escuros + mono menta (Apresentador, Terminal Noir) com creme/champanhe e legenda branca (MARCA, Clean Luxury) */
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden; background: #f6f1ea;
+        color: #ffffff; font-family: "Montserrat", sans-serif;
+        --mint: #5eead4; --champ: #edd3a0; --champ-d: #b8935a; --ink: #121418; --card: rgba(16, 18, 22, 0.9);
+        --cream: #f6f1ea; --brown: #1d1815; --sub: #aab2bc; --red: #f87171;
+      }
+      .mono { font-family: "JetBrains Mono", monospace; }
+      .em { font-family: "Noto Color Emoji", sans-serif; font-weight: 400; }
+
+      /* ---------- câmera: punch-in centrado no rosto ---------- */
+      #cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: %%ORIGIN%%; z-index: 0; }
+      #fala, #fim { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+
+      /* ---------- cards do topo (y 300-560, 180 px livres à direita) ---------- */
+      #cards { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+      .card { position: absolute; left: 60px; top: 300px; width: 840px; padding: 28px 34px 32px; border-radius: 30px;
+        background: var(--card); border: 1.5px solid rgba(237, 211, 160, 0.32);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.06); transform-origin: 50% 0; }
+      .card::before { content: ""; position: absolute; left: 0; top: 30px; bottom: 30px; width: 5px; border-radius: 0 4px 4px 0; background: var(--champ); }
+      .kick { display: flex; align-items: center; gap: 14px; height: 36px; font-family: "JetBrains Mono", monospace; font-weight: 700;
+        font-size: 26px; letter-spacing: 0.12em; color: var(--mint); white-space: nowrap; }
+      .kick .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--mint); flex: none; box-shadow: 0 0 12px rgba(94, 234, 212, 0.8); }
+      .kick .dot.red { background: var(--red); box-shadow: 0 0 12px rgba(248, 113, 113, 0.9); }
+      .kick .spicy { color: var(--champ); }
+      .title { margin-top: 14px; font-weight: 800; font-size: 58px; line-height: 1.08; letter-spacing: -0.01em; color: #fff; max-width: 640px; }
+      .title .k { color: var(--champ); }
+      .title.big { font-size: 74px; max-width: 760px; }
+      .sub { margin-top: 14px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 26px; letter-spacing: 0.04em; color: var(--sub); }
+      .sub b { color: var(--mint); font-weight: 700; }
+      /* regras: linhas que entram conforme a fala */
+      .rule { display: flex; align-items: center; gap: 18px; margin-top: 16px; font-weight: 800; font-size: 46px; color: #fff; }
+      .rule .n { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; color: var(--ink); background: var(--mint);
+        border-radius: 10px; padding: 2px 12px; }
+      .rule .k { color: var(--champ); }
+      .rule small { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 26px; color: var(--sub); }
+      /* pingue-pongue: duas opções, a escolhida acende */
+      .vs { margin-top: 18px; display: flex; align-items: center; gap: 16px; }
+      .opt { flex: 1; height: 116px; border-radius: 22px; border: 2px solid rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.04);
+        display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; text-align: center;
+        font-weight: 800; font-size: 40px; line-height: 1.05; color: #fff; position: relative; }
+      .opt .chk { position: absolute; right: -12px; top: -14px; width: 46px; height: 46px; border-radius: 50%; background: var(--mint);
+        display: flex; align-items: center; justify-content: center; opacity: 0; }
+      .opt.long { font-size: 33px; }
+      .vsx { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 26px; color: var(--mint); flex: none; }
+
+      /* ficha do pulo (à direita no kicker de cada card) */
+      .tokw { margin-left: auto; position: relative; display: flex; }
+      .tok { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--champ);
+        color: var(--champ); font-size: 23px; letter-spacing: 0.08em; }
+      .tok .em { font-size: 24px; }
+      .tok.used { border-color: var(--red); color: var(--red); }
+      .tokw .tok.used.swap { position: absolute; right: 0; top: 0; }
+
+      /* ---------- figurinhas do meio (y ~1150, sobre a blusa, acima da legenda) ---------- */
+      #chips { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+      .chip-row { position: absolute; left: 70px; width: 860px; top: 1160px; display: flex; justify-content: center; gap: 16px; transform: translateY(-50%); }
+      .chip { display: inline-flex; align-items: center; gap: 14px; padding: 16px 30px 16px 22px; border-radius: 999px; background: var(--cream);
+        color: var(--brown); font-weight: 800; font-size: 42px; white-space: nowrap; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28); }
+      .chip .em { font-size: 44px; }
+      .chip small { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 24px; color: #6f6157; letter-spacing: 0.04em; }
+      .chip.dark { background: var(--card); color: #fff; border: 2px solid rgba(94, 234, 212, 0.6); }
+      .chip.dark small { color: var(--mint); }
+      #think-n { display: inline-grid; }
+      #think-n span { grid-area: 1 / 1; opacity: 0; }
+      /* carimbo PULOU! */
+      .stamp { position: absolute; left: 540px; top: 700px; z-index: 6; transform: translate(-50%, -50%) rotate(-9deg);
+        padding: 10px 40px 14px; border: 9px solid var(--red); border-radius: 22px; background: rgba(255, 250, 245, 0.93);
+        color: var(--red); font-weight: 900; font-size: 128px; letter-spacing: 0.02em; line-height: 1; white-space: nowrap;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25); }
+      .sticker { position: absolute; z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+      .sticker .em { font-size: 150px; line-height: 1; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3)); }
+      .sticker .lbl { padding: 8px 20px; border-radius: 14px; background: var(--card); color: var(--mint);
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 30px; }
+
+      /* ---------- legenda: quem fala + blocos de até 2 linhas (centro em CAP_Y) ---------- */
+      #caps-w { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+      .cg { position: absolute; left: 70px; width: 860px; top: %%CAP_Y%%px; transform: translateY(-50%);
+        display: flex; flex-direction: column; align-items: center; row-gap: 6px; }
+      .who { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px; padding: 6px 16px; border-radius: 999px;
+        background: rgba(16, 18, 22, 0.78); font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 24px; letter-spacing: 0.14em; }
+      .who i { width: 12px; height: 12px; border-radius: 50%; }
+      .cg.j .who { color: var(--mint); } .cg.j .who i { background: var(--mint); }
+      .cg.m .who { color: var(--champ); } .cg.m .who i { background: var(--champ); }
+      .ln { display: flex; justify-content: center; column-gap: 0.26em; white-space: nowrap;
+        font-weight: 800; font-size: 64px; line-height: 1.1; letter-spacing: -0.005em; }
+      .cw { display: inline-block; color: #ffffff;
+        text-shadow: 0 0 2px rgba(20, 14, 10, 0.6), 0 2px 4px rgba(20, 14, 10, 0.45), 0 6px 24px rgba(20, 14, 10, 0.55); }
+      .cg.j .cw.k { color: var(--mint); }
+      .cg.m .cw.k { color: var(--champ); }
+
+      /* ---------- tela final: a prenda ---------- */
+      #end { position: absolute; inset: 0; z-index: 8; }
+      #veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(246, 241, 234, 0.74), rgba(246, 241, 234, 0.9)); }
+      #end-in { position: absolute; left: 60px; width: 900px; top: 520px; display: flex; flex-direction: column; align-items: center; color: var(--brown); text-align: center; }
+      #e-kick { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.22em; color: #3a302a; text-transform: uppercase; }
+      #e-hair { width: 150px; height: 3px; border-radius: 2px; background: var(--champ-d); margin: 28px 0 32px; }
+      #e-title { font-weight: 800; font-size: 86px; line-height: 1.02; letter-spacing: -0.015em; color: var(--brown); }
+      #e-title .k { color: var(--champ-d); }
+      #e-sub { margin-top: 22px; font-weight: 700; font-size: 50px; color: #3a302a; }
+      #e-poll { margin-top: 56px; padding: 30px 34px 34px; border-radius: 34px; background: var(--ink); width: 860px;
+        box-shadow: 0 26px 60px rgba(29, 24, 21, 0.3); display: flex; flex-direction: column; align-items: center; }
+      #e-q { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 26px; letter-spacing: 0.14em; color: var(--mint); }
+      #e-opts { margin-top: 22px; display: flex; gap: 18px; width: 100%; }
+      .e-opt { flex: 1; height: 120px; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 14px;
+        font-weight: 800; font-size: 46px; }
+      .e-opt .em { font-size: 48px; }
+      #e-o1 { background: var(--champ); color: var(--brown); }
+      #e-o2 { background: var(--cream); color: var(--brown); }
+      #e-vote { margin-top: 22px; font-weight: 700; font-size: 34px; color: #fff; }
+      #e-handles { margin-top: 44px; display: flex; gap: 22px; align-items: center; font-weight: 800; font-size: 40px; color: var(--brown); }
+      #e-handles i { width: 10px; height: 10px; border-radius: 50%; background: var(--champ-d); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="%%DUR%%" data-width="1080" data-height="1920" data-fps="30">
+      <div id="cam">
+        <video id="fala" class="clip" src="assets/footage/fala.mp4" data-start="0" data-duration="%%SPEECH%%" data-track-index="0" playsinline data-has-audio="true"></video>
+        <img id="fim" class="clip" src="assets/img/fim.jpg" alt="" data-start="%%SPEECH%%" data-duration="%%END_D%%" data-track-index="1" />
+      </div>
+
+      <!-- cards do topo: gancho, título, regras, perguntas, pingue-pongue -->
+      <div id="cards" class="clip" data-start="0" data-duration="%%SPEECH%%" data-track-index="3">
+%%CARDS_DOM%%
+      </div>
+
+      <!-- figurinhas, carimbo e reações -->
+      <div id="chips" class="clip" data-start="0" data-duration="%%SPEECH%%" data-track-index="4">
+%%CHIPS_DOM%%
+      </div>
+
+      <!-- legenda -->
+      <div id="caps-w" class="clip" data-start="0" data-duration="%%SPEECH%%" data-track-index="5">
+%%CAPS_DOM%%
+      </div>
+
+      <!-- tela final: a prenda -->
+      <div id="end" class="clip" data-start="%%SPEECH%%" data-duration="%%END_D%%" data-track-index="6">
+        <div id="veil"></div>
+        <div id="end-in">
+          <div id="e-kick"><span data-var-text="quadro">Nome do Quadro</span> · EP. 01</div>
+          <div id="e-hair"></div>
+          <div id="e-title">Ela <span class="k">pulou</span><br />1 pergunta…</div>
+          <div id="e-sub">e agora deve uma prenda <span class="em">🎁</span></div>
+          <div id="e-poll">
+            <div id="e-q">QUAL VAI SER A PRENDA?</div>
+            <div id="e-opts">
+              <div class="e-opt" id="e-o1"><span class="em">🏷️</span>Desconto</div>
+              <div class="e-opt" id="e-o2"><span class="em">🎟️</span>Sorteio</div>
+            </div>
+            <div id="e-vote">Vota aqui nos comentários <span class="em">👇</span></div>
+          </div>
+          <div id="e-handles"><span data-var-text="loja">@sua_marca</span><i></i><span data-var-text="handle">@seu_perfil</span></div>
+        </div>
+      </div>
+
+      <audio id="bgm" src="assets/music/trilha.m4a" data-start="0" data-duration="%%DUR%%" data-track-index="10" data-volume="1"></audio>
+%%SFX%%
+    </div>
+    <script>
+      const D = %%DATA%%;
+      const tl = gsap.timeline({ paused: true });
+      const IR = { immediateRender: false };
+
+      // ---------- câmera: aberto / médio / close, troca seca a cada corte (esconde o jump cut) ----------
+      gsap.set("#cam", { scale: D.cam[0][1] });
+      tl.fromTo("#cam", { scale: D.cam[0][1] }, { scale: D.cam[0][1] + 0.06, duration: D.cam[1][0], ease: "none" }, 0);  // gancho: push-in lento
+      D.cam.slice(1).forEach(([t, s]) => tl.set("#cam", { scale: s }, t));
+
+      // ---------- cards: entram de cima com leve escala, saem quando o próximo entra ----------
+      gsap.set([".card", ".rule", ".opt .chk", ".tok.swap"], { opacity: 0 });
+      D.cards.forEach((c) => {
+        const s = "#" + c.id;
+        tl.fromTo(s, { opacity: 0, y: -36, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.38, ease: "power3.out", ...IR }, c.t);
+        tl.to(s, { opacity: 0, y: -24, scale: 0.98, duration: 0.22, ease: "power2.in", ...IR }, c.t1 - 0.22);
+        (c.rows || []).forEach((r, i) =>
+          tl.fromTo(s + "_r" + i, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "back.out(1.8)", ...IR }, r));
+        if (c.opts) {
+          tl.fromTo(s + " .opt", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.28, ease: "power3.out", stagger: 0.08, ...IR }, c.t + 0.12);
+          const win = s + " .opt:nth-of-type(" + (c.pick === 0 ? 1 : 3) + ")", lose = s + " .opt:nth-of-type(" + (c.pick === 0 ? 3 : 1) + ")";
+          tl.fromTo(win, { backgroundColor: "rgba(255,255,255,0.04)", color: "#ffffff", borderColor: "rgba(255,255,255,0.22)", scale: 1 },
+            { backgroundColor: "#edd3a0", color: "#1d1815", borderColor: "#edd3a0", scale: 1.06, duration: 0.24, ease: "back.out(2.2)", ...IR }, c.pickAt);
+          tl.fromTo(win + " .chk", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.24, ease: "back.out(2.6)", ...IR }, c.pickAt + 0.06);
+          tl.fromTo(lose, { opacity: 1 }, { opacity: 0.3, duration: 0.24, ease: "power2.out", ...IR }, c.pickAt);
+        }
+      });
+      // ficha do pulo: no card da pergunta 3 ela é gasta no "eu vou pular essa" (×1 some, ×0 vermelha entra com mola)
+      tl.to(D.tokSwap.card + " .tok:not(.swap)", { opacity: 0, duration: 0.12, ...IR }, D.tokSwap.t);
+      tl.fromTo(D.tokSwap.card + " .tok.swap", { opacity: 0, scale: 1.6, rotation: -10 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: "elastic.out(1.1, 0.45)", ...IR }, D.tokSwap.t);
+
+      // ---------- figurinhas: pop com mola ----------
+      gsap.set([".chip", ".stamp", ".sticker"], { opacity: 0 });
+      D.chips.forEach((c) => {
+        const s = "#" + c.id;
+        if (c.kind === "stamp") {
+          tl.fromTo(s, { opacity: 0, scale: 2.4, rotation: -2 }, { opacity: 1, scale: 1, rotation: -9, duration: 0.24, ease: "power4.in", ...IR }, c.t);
+          tl.fromTo(s, { x: 0 }, { x: 10, duration: 0.05, repeat: 3, yoyo: true, ease: "none", ...IR }, c.t + 0.24);
+        } else {
+          tl.fromTo(s, { opacity: 0, scale: 0.6, y: 24 }, { opacity: 1, scale: 1, y: 0, duration: 0.34, ease: "back.out(2.2)", ...IR }, c.t);
+        }
+        tl.to(s, { opacity: 0, scale: 0.92, duration: 0.2, ease: "power2.in", ...IR }, c.t1 - 0.2);
+      });
+      // contador do "pensando…" (seek-safe: um número por vez)
+      D.think.forEach(([t, i]) => { tl.set("#think-n span", { opacity: 0 }, t); tl.set("#think-n span:nth-child(" + (i + 1) + ")", { opacity: 1 }, t); });
+
+      // ---------- legenda: palavra entra no instante falado ----------
+      gsap.set([".cg", ".cw"], { opacity: 0 });
+      D.caps.forEach((g, gi) => {
+        tl.set("#g" + gi, { opacity: 1 }, g.t0);
+        if (g.who) tl.fromTo("#g" + gi + " .who", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out", ...IR }, g.t0);
+        g.lines.forEach((ln, li) => ln.forEach((w, wi) => {
+          const sel = "#w" + gi + "_" + li + "_" + wi;
+          if (w.k) tl.fromTo(sel, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.18, ease: "back.out(2.4)", ...IR }, w.t);
+          else tl.fromTo(sel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.14, ease: "power2.out", ...IR }, w.t);
+        }));
+        tl.set("#g" + gi, { opacity: 0 }, g.t1);
+      });
+
+      // ---------- tela final: último quadro desfocado + véu creme, conteúdo em cascata ----------
+      const E = D.end;
+      gsap.set(["#veil", "#e-kick", "#e-hair", "#e-title", "#e-sub", "#e-poll", "#e-handles"], { opacity: 0 });
+      tl.fromTo("#fim", { filter: "blur(0px)" }, { filter: "blur(18px)", duration: 0.5, ease: "power2.out", ...IR }, E);
+      tl.fromTo("#cam", { scale: D.cam[D.cam.length - 1][1] }, { scale: D.cam[D.cam.length - 1][1] + 0.06, duration: D.dur - E, ease: "none", ...IR }, E);
+      tl.fromTo("#veil", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out", ...IR }, E);
+      [["#e-kick", 0.06], ["#e-title", 0.14], ["#e-sub", 0.3]].forEach(([s, d]) =>
+        tl.fromTo(s, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", ...IR }, E + d));
+      tl.fromTo("#e-hair", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.45, ease: "power2.out", ...IR }, E + 0.1);
+      tl.fromTo("#e-poll", { opacity: 0, y: 40, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.42, ease: "back.out(1.6)", ...IR }, E + D.pollAt);
+      tl.fromTo(".e-opt", { scale: 0.85 }, { scale: 1, duration: 0.32, ease: "back.out(2.4)", stagger: 0.12, ...IR }, E + D.pollAt + 0.16);
+      tl.fromTo("#e-o1", { rotation: 0 }, { rotation: -2.5, duration: 0.12, repeat: 3, yoyo: true, ease: "sine.inOut", ...IR }, E + D.pollAt + 1.3);
+      tl.fromTo("#e-o2", { rotation: 0 }, { rotation: 2.5, duration: 0.12, repeat: 3, yoyo: true, ease: "sine.inOut", ...IR }, E + D.pollAt + 1.9);
+      tl.fromTo("#e-handles", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out", ...IR }, E + D.pollAt + 0.5);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

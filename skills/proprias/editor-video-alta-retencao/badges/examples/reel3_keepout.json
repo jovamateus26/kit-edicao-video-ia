@@ -1,0 +1,23 @@
+[
+  {"start": 17.64, "end": 22.3, "x": 0, "y": 960, "w": 1080, "h": 960, "label": "mão + celular + cabo"},
+  {"start": 17.64, "end": 22.3, "x": 820, "y": 1120, "w": 260, "h": 260, "weight": 2.0, "label": "LED do celular"},
+  {"start": 22.3, "end": 23.1, "x": 250, "y": 300, "w": 830, "h": 1620, "label": "celular em close + LED azul"},
+  {"start": 23.08, "end": 30.84, "x": 0, "y": 0, "w": 1080, "h": 880, "label": "tela do terminal"},
+  {"start": 23.08, "end": 30.84, "x": 0, "y": 1180, "w": 1080, "h": 740, "weight": 0.3, "label": "mãos digitando"},
+  {"start": 30.84, "end": 34.28, "x": 0, "y": 0, "w": 1080, "h": 1300, "label": "terminal com a saída do fastboot devices"},
+  {"start": 34.28, "end": 45.08, "x": 0, "y": 0, "w": 1080, "h": 1170, "label": "terminal (comandos slot A / flash.sh)"},
+  {"start": 41.5, "end": 45.08, "x": 150, "y": 1250, "w": 620, "h": 670, "weight": 0.5, "label": "dedo apertando Enter"},
+  {"start": 45.08, "end": 48.56, "x": 0, "y": 1000, "w": 1080, "h": 500, "label": "linhas ativas do flash"},
+  {"start": 45.08, "end": 48.56, "x": 0, "y": 0, "w": 1080, "h": 1000, "weight": 0.3, "label": "log antigo rolando"},
+  {"start": 48.56, "end": 50.52, "x": 0, "y": 1100, "w": 1080, "h": 420, "label": "Flashing completed / prompt"},
+  {"start": 48.56, "end": 50.52, "x": 0, "y": 0, "w": 1080, "h": 1100, "weight": 0.3, "label": "log antigo"},
+  {"start": 50.52, "end": 52.8, "x": 50, "y": 520, "w": 650, "h": 1150, "label": "celular"},
+  {"start": 50.52, "end": 52.8, "x": 120, "y": 1420, "w": 420, "h": 500, "label": "mão tirando o cabo"},
+  {"start": 52.8, "end": 54.56, "x": 50, "y": 340, "w": 680, "h": 1400, "label": "celular"},
+  {"start": 54.56, "end": 61.56, "x": 150, "y": 330, "w": 700, "h": 1440, "label": "celular: alerta do bootloader / SONY"},
+  {"start": 61.56, "end": 63.44, "x": 80, "y": 460, "w": 720, "h": 1460, "label": "celular"},
+  {"start": 63.44, "end": 64.96, "x": 0, "y": 250, "w": 760, "h": 1670, "label": "celular: seleção de idioma"},
+  {"start": 69.6, "end": 70.92, "x": 0, "y": 0, "w": 570, "h": 1920, "label": "celular: grade de apps"},
+  {"start": 70.92, "end": 79.08, "x": 0, "y": 0, "w": 1080, "h": 1150, "label": "barra de status, relógio e farol"},
+  {"start": 76.5, "end": 79.08, "x": 0, "y": 1250, "w": 380, "h": 670, "weight": 0.1, "label": "mão segurando"}
+]

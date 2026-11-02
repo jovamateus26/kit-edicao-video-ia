@@ -1,0 +1,161 @@
+[
+ {
+  "id": "tm",
+  "url": "https://www.estadao.com.br/tecmundo/ciberseguranca/binance-sofre-suposto-ataque-hacker-bilionario-corretora-investiga/",
+  "shots": [
+   {
+    "name": "card",
+    "from": "Binance confirma ataque hacker bilionário",
+    "to": "serão cobertos se necessário",
+    "hl": [
+     "Binance confirma ataque hacker bilionário",
+     "Saques foram suspensos temporariamente"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "fox",
+  "url": "https://www.foxbusiness.com/technology/binance-says-security-incident-had-estimated-6-3b-impact-3b-assets-frozen",
+  "lang": "en-US,en;q=0.9",
+  "shots": [
+   {
+    "name": "card",
+    "from": "Thieves make off with",
+    "to": "pledging to cover",
+    "hl": [
+     "$6.3B",
+     "pledging to cover"
+    ]
+   }
+  ],
+  "keepPaywall": true
+ },
+ {
+  "id": "ctg",
+  "url": "https://canaltech.com.br/mercado/fim-da-busca-limpa-google-vai-colocar-anuncios-no-modo-ia-e-brasil-esta-na-lista/",
+  "hide": [
+   ".cnn-partners-badge"
+  ],
+  "shots": [
+   {
+    "name": "card",
+    "from": "Fim da busca limpa: Google",
+    "to": "Brasil está na lista",
+    "hl": [
+     "Google vai colocar anúncios no Modo IA"
+    ]
+   },
+   {
+    "name": "lede",
+    "from": "O Google anunciou, nesta quarta-feira",
+    "to": "junto de México e Reino Unido.",
+    "hl": [
+     "incluindo o Brasil",
+     "até dezembro"
+    ]
+   },
+   {
+    "name": "ads",
+    "from": "Segundo a central de ajuda",
+    "to": "conteúdo produzido pela IA.",
+    "hl": [
+     "dentro ou ao lado das respostas"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "od",
+  "url": "https://olhardigital.com.br/2026/10/29/inteligencia-artificial/gemini-agora-permite-editar-pdfs-documentos-e-planilhas-dentro-do-chat/",
+  "shots": [
+   {
+    "name": "card",
+    "from": "Gemini agora permite editar PDFs",
+    "to": "dentro do chat",
+    "hl": [
+     "editar PDFs, documentos e planilhas dentro do chat"
+    ]
+   },
+   {
+    "name": "lede",
+    "from": "ampliou as ferramentas",
+    "to": "novamente ao chatbot.",
+    "hl": [
+     "criem, visualizem e editem documentos diretamente nas conversas",
+     "elimina a necessidade de baixar arquivos"
+    ]
+   }
+  ],
+  "hide": [
+   "[id*=mgid i]",
+   "[class*=mgid i]",
+   "[id*=taboola i]",
+   "[class*=taboola i]",
+   "[id*=outbrain i]",
+   "[class*=outbrain i]",
+   "ins",
+   "[data-ad]",
+   "[class*=native i]"
+  ]
+ },
+ {
+  "id": "bpm",
+  "url": "https://bpmoney.com.br/economia/internacional-economia/poste-italiane-tim-brasil-ativo-estrategico-uso-tatico/",
+  "shots": [
+   {
+    "name": "card",
+    "from": "Poste Italiane não vê TIM Brasil",
+    "to": "compra da Telecom Italia",
+    "hl": [
+     "não vê TIM Brasil como ativo estratégico"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "ttl",
+  "url": "https://teletime.com.br/27/07/2026/tim-lucro-1-bilhao-segundo-trimestre/",
+  "shots": [
+   {
+    "name": "lede",
+    "from": "encerrou o segundo trimestre",
+    "to": "linhas pré-pagas (-8%).",
+    "hl": [
+     "61,87 milhões usuários de telefonia móvel"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "tcg",
+  "url": "https://techcrunch.com/2026/10/29/gm-reaches-220m-settlement-over-selling-drivers-private-data/",
+  "lang": "en-US,en;q=0.9",
+  "shots": [
+   {
+    "name": "card",
+    "from": "GM reaches $220M settlement",
+    "to": "October 29, 2026",
+    "hl": [
+     "GM reaches $220M settlement"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "coag",
+  "url": "https://coag.gov/press-releases/general-motors-will-pay-220m-for-illegally-sharing-drivers-private-data/",
+  "lang": "en-US,en;q=0.9",
+  "shots": [
+   {
+    "name": "data",
+    "from": "The data GM sold was personal",
+    "to": "sometimes increasing their premiums.",
+    "hl": [
+     "how many times they braked or accelerated quickly",
+     "sometimes increasing their premiums"
+    ]
+   }
+  ]
+ }
+]

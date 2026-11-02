@@ -1,0 +1,594 @@
+{
+ "fonte_local": "~/Projetos/hyperframes-showcase",
+ "galeria_local": "~/Projetos/hyperframes-showcase/index.html",
+ "instalar_fallback": "npx hyperframes add <name> --dir <projeto>",
+ "total": 24,
+ "models": [
+  {
+   "name": "app-showcase",
+   "type": "block",
+   "uso": "Três telas de app flutuando em 3D (pede área livre ampla).",
+   "descricao_original": "Fitness app product showcase with three floating smartphone screens",
+   "tags": [
+    "showcase",
+    "app",
+    "3d"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 5.5,
+   "path": "~/Projetos/hyperframes-showcase/blocks/app-showcase",
+   "files": [
+    "app-showcase.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "produto / showcase / galeria"
+  },
+  {
+   "name": "camcorder-hud",
+   "type": "block",
+   "uso": "HUD de filmadora: REC, bateria, contador.",
+   "descricao_original": "Responsive REC, battery, editable date placeholder, and timeline-driven counter overlay for creator-camera and camcorder treatments",
+   "tags": [
+    "camcorder",
+    "camera",
+    "recording",
+    "hud",
+    "overlay",
+    "creator",
+    "media-treatment-overlay"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "path": "~/Projetos/hyperframes-showcase/blocks/camcorder-hud",
+   "files": [
+    "camcorder-hud.html",
+    "demo-backdrop.jpg",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "overlay / anotacao"
+  },
+  {
+   "name": "code-snippet-apple-terminal-pro",
+   "type": "block",
+   "uso": "Janela de terminal digitando comandos em sequência, com cursor.",
+   "descricao_original": "Apple Terminal Pro profile: black background with grey text and lime green cursor, per-character typing animation of a shell session.",
+   "tags": [
+    "code",
+    "developer",
+    "showcase",
+    "terminal",
+    "apple",
+    "apple-terminal"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 12,
+   "path": "~/Projetos/hyperframes-showcase/blocks/code-snippet-apple-terminal-pro",
+   "files": [
+    "code-snippet-apple-terminal-pro.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "codigo / terminal"
+  },
+  {
+   "name": "code-typing",
+   "type": "block",
+   "uso": "Código com syntax highlight digitado token a token.",
+   "descricao_original": "Token-streamed typing reveal with a caret that tracks the frontier — deterministic, no CSS animation.",
+   "tags": [
+    "code",
+    "code-animation",
+    "typing",
+    "developer"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 5,
+   "path": "~/Projetos/hyperframes-showcase/blocks/code-typing",
+   "files": [
+    "code-typing.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "codigo / terminal"
+  },
+  {
+   "name": "flowchart",
+   "type": "block",
+   "uso": "Fluxograma / árvore de decisão com conectores e notas (pede área ampla).",
+   "descricao_original": "Animated decision tree with SVG connectors, sticky-note nodes, cursor interaction, and typing correction",
+   "tags": [
+    "diagram",
+    "flowchart",
+    "interactive"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 12,
+   "path": "~/Projetos/hyperframes-showcase/blocks/flowchart",
+   "files": [
+    "flowchart.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "dados / graficos / mapas"
+  },
+  {
+   "name": "freeze-frame-dressing",
+   "type": "block",
+   "uso": "Congela o frame e decora com papel, fita e flash (precisa de recorte).",
+   "descricao_original": "Timeline-driven paper, tape, and flash dressing for a freeze-frame or background-removed subject",
+   "tags": [
+    "freeze-frame",
+    "cutout",
+    "scrapbook",
+    "paper",
+    "social",
+    "overlay",
+    "media-treatment-overlay"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "path": "~/Projetos/hyperframes-showcase/blocks/freeze-frame-dressing",
+   "files": [
+    "demo-background.jpg",
+    "demo-cutout.webp",
+    "demo.html",
+    "freeze-frame-dressing.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "camera / 3d / video"
+  },
+  {
+   "name": "instagram-follow",
+   "type": "block",
+   "uso": "Card de perfil + botão Seguir com clique (nativo 1080×1920).",
+   "descricao_original": "Animated Instagram follow overlay with profile card and follow button",
+   "tags": [
+    "social",
+    "overlay",
+    "instagram"
+   ],
+   "dimensions": {
+    "width": 1080,
+    "height": 1920
+   },
+   "duration": 4.5,
+   "path": "~/Projetos/hyperframes-showcase/blocks/instagram-follow",
+   "files": [
+    "assets",
+    "instagram-follow.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco já vertical 1080x1920: monte via data-composition-src.",
+   "funcao": "social / notificacao / cta"
+  },
+  {
+   "name": "lt-clean-bar",
+   "type": "block",
+   "uso": "Lower-third de nome + função em barra.",
+   "descricao_original": "Minimal white-card lower third for podcasts/interviews: accent tab, name + role, clip-wipe entrance",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4.8,
+   "path": "~/Projetos/hyperframes-showcase/blocks/lt-clean-bar",
+   "files": [
+    "lt-clean-bar.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "lower-third / identificacao"
+  },
+  {
+   "name": "mk-line-graph",
+   "type": "block",
+   "uso": "Gráfico de linha desenhando-se.",
+   "descricao_original": "One or two SVG series draw on with dots popping and value labels riding the draw front; dim baseline axis, x-labels, color-dot legend",
+   "tags": [
+    "data-viz",
+    "chart",
+    "graph",
+    "minimal"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 7,
+   "path": "~/Projetos/hyperframes-showcase/blocks/mk-line-graph",
+   "files": [
+    "mk-line-graph.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "dados / graficos / mapas"
+  },
+  {
+   "name": "notification-cascade",
+   "type": "block",
+   "uso": "Notificações de celular empilhando (nativo 1080×1920).",
+   "descricao_original": "Phone notifications land one after another and stack up the screen, each banner pushing the pile down as it arrives, before the whole stack lifts away into a closing card",
+   "tags": [
+    "showcase",
+    "mock-ui",
+    "notification",
+    "vertical",
+    "ad-template"
+   ],
+   "dimensions": {
+    "width": 1080,
+    "height": 1920
+   },
+   "duration": 14,
+   "path": "~/Projetos/hyperframes-showcase/blocks/notification-cascade",
+   "files": [
+    "TEMPLATE.md",
+    "assets",
+    "notification-cascade.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Bloco já vertical 1080x1920: monte via data-composition-src.",
+   "funcao": "social / notificacao / cta"
+  },
+  {
+   "name": "yt-comment-card",
+   "type": "block",
+   "uso": "Comentário de rede social sendo digitado.",
+   "descricao_original": "Social comments typing on over footage: avatar pop, username and time, per-character typewriter, likes row; image avatars or initials chips",
+   "tags": [
+    "social",
+    "comments",
+    "creator",
+    "overlay"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 8,
+   "path": "~/Projetos/hyperframes-showcase/blocks/yt-comment-card",
+   "files": [
+    "registry-item.json",
+    "yt-comment-card.html"
+   ],
+   "adaptacao_9x16": "Bloco 16:9 (1920x1080): em Reels 9:16 monte num wrapper com scale (~0.56) ou adapte o layout;  Posição sempre pelo overlay_safe_zones.py.",
+   "funcao": "social / notificacao / cta"
+  },
+  {
+   "name": "animated-bar-chart",
+   "type": "component",
+   "uso": "Card de barras crescendo com valores.",
+   "descricao_original": "A compact data card with deterministic bar growth and value callouts.",
+   "tags": [
+    "data"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/animated-bar-chart",
+   "files": [
+    "animated-bar-chart.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "dados / graficos / mapas"
+  },
+  {
+   "name": "badge-pop",
+   "type": "component",
+   "uso": "Selo com entrada elástica (contador ou rótulo curto).",
+   "descricao_original": "A transitions.dev-inspired notification badge pop with elastic scale and count reveal",
+   "tags": [
+    "video-primitive",
+    "transition-primitive",
+    "transitions-dev-port",
+    "badge",
+    "microinteraction"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/badge-pop",
+   "files": [
+    "badge-pop.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "overlay / anotacao"
+  },
+  {
+   "name": "caption-highlight",
+   "type": "component",
+   "uso": "Fundo varrendo a palavra ativa (cor configurável).",
+   "descricao_original": "Red background sweep behind each active word, TikTok-style",
+   "tags": [
+    "captions",
+    "caption-style",
+    "highlight",
+    "social",
+    "tiktok"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/caption-highlight",
+   "files": [
+    "caption-highlight.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "legenda"
+  },
+  {
+   "name": "caption-neon-accent",
+   "type": "component",
+   "uso": "Palavras-chave com acento luminoso multicor.",
+   "descricao_original": "Multi-color neon glow accents with wiggle drift animation",
+   "tags": [
+    "captions",
+    "caption-style",
+    "neon",
+    "glow",
+    "accent"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/caption-neon-accent",
+   "files": [
+    "caption-neon-accent.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "legenda"
+  },
+  {
+   "name": "caption-neon-glow",
+   "type": "component",
+   "uso": "Texto com brilho neon e palavras-chave em destaque (cores configuráveis).",
+   "descricao_original": "Cyan and magenta neon glow with keyword accent colors",
+   "tags": [
+    "captions",
+    "caption-style",
+    "neon",
+    "glow",
+    "gaming"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/caption-neon-glow",
+   "files": [
+    "caption-neon-glow.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "legenda"
+  },
+  {
+   "name": "caption-parallax-layers",
+   "type": "component",
+   "uso": "Texto 3D por trás do assunto (precisa de recorte/matting).",
+   "descricao_original": "Behind-subject 3D text layering with vertical stretch effect",
+   "tags": [
+    "captions",
+    "caption-style",
+    "parallax",
+    "3d",
+    "depth"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/caption-parallax-layers",
+   "files": [
+    "caption-parallax-layers.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "legenda"
+  },
+  {
+   "name": "constellation-hub",
+   "type": "component",
+   "uso": "Hub central com nós acendendo em sequência.",
+   "descricao_original": "Feature nodes brighten in narration order as real-length SVG connectors draw outward from a fixed central hub, then settle into one lockup.",
+   "tags": [
+    "motion-primitive",
+    "feature-tour",
+    "hub",
+    "nodes",
+    "connector",
+    "reveal"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/constellation-hub",
+   "files": [
+    "README.md",
+    "constellation-hub.html",
+    "demo.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "dados / graficos / mapas"
+  },
+  {
+   "name": "focus-rack",
+   "type": "component",
+   "uso": "Troca de foco entre dois cards em profundidades diferentes.",
+   "descricao_original": "Focus shifts once between two cards at different apparent depths through synchronized blur, dimming, scale, and parallax.",
+   "tags": [
+    "motion-primitive",
+    "camera",
+    "focus",
+    "focus-rack",
+    "depth",
+    "parallax",
+    "emphasize"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/focus-rack",
+   "files": [
+    "demo.html",
+    "focus-rack.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "camera / 3d / video"
+  },
+  {
+   "name": "grid-card-assemble",
+   "type": "component",
+   "uso": "Grade de cards montando em cascata (ícone + rótulo).",
+   "descricao_original": "N capability cards (thin-line icon that draws on, mono label, optional muted body) stagger-assemble into a grid or vertical list with a fade plus short slide into slot, then hold perfectly still.",
+   "tags": [
+    "motion-primitive",
+    "layout",
+    "grid",
+    "list",
+    "stagger",
+    "assemble",
+    "feature-tour"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/grid-card-assemble",
+   "files": [
+    "README.md",
+    "demo.html",
+    "grid-card-assemble.html",
+    "registry-item.json"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "ui / chat / cursor"
+  },
+  {
+   "name": "sheet-spring-up",
+   "type": "component",
+   "uso": "Bottom sheet subindo com mola (termina acima da faixa da legenda).",
+   "descricao_original": "A bottom sheet rushes up from below the frame on a real spring sampled frame by frame from reference footage, overshooting its resting place and settling back without an approximated ease",
+   "tags": [
+    "video-primitive",
+    "sheet",
+    "spring",
+    "mock-ui",
+    "overlay"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/sheet-spring-up",
+   "files": [
+    "demo.html",
+    "registry-item.json",
+    "sheet-spring-up.html"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "ui / chat / cursor"
+  },
+  {
+   "name": "state-chip-rail",
+   "type": "component",
+   "uso": "Trilho de chips de estado avançando (ex.: Queued→Reading→Done).",
+   "descricao_original": "A rail of mono status chips advances a seek-safe data-state snap machine on a cue schedule: active chip ink on surface, done chips dim, pending chips hollow, optional badges pop beside one state.",
+   "tags": [
+    "motion-primitive",
+    "product-demo",
+    "state-machine",
+    "status",
+    "chips",
+    "rail"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/state-chip-rail",
+   "files": [
+    "README.md",
+    "demo.html",
+    "registry-item.json",
+    "state-chip-rail.html"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "ui / chat / cursor"
+  },
+  {
+   "name": "stop-motion-cadence",
+   "type": "component",
+   "uso": "Movimento em degraus, cadência de stop-motion.",
+   "descricao_original": "The stepped-time law as a demo primitive: one driver quantizes timeline time to floor(t * fps) / fps and feeds ALL motion; four token paper-cut shapes throw-and-land with squash on hits, 2-frame boil jitter seeded per step, and sparkle accents living exactly 2 to 3 frames.",
+   "tags": [
+    "motion-primitive",
+    "time-law",
+    "stop-motion",
+    "stepped",
+    "boil",
+    "deterministic",
+    "experiment"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/stop-motion-cadence",
+   "files": [
+    "README.md",
+    "demo.html",
+    "registry-item.json",
+    "stop-motion-cadence.html"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "primitiva de movimento"
+  },
+  {
+   "name": "tilt-card",
+   "type": "component",
+   "uso": "Card 3D com profundidade/parallax.",
+   "descricao_original": "A transitions.dev-inspired tilt card primitive with depth layers and hover-style parallax",
+   "tags": [
+    "video-primitive",
+    "transition-primitive",
+    "transitions-dev-port",
+    "card",
+    "tilt"
+   ],
+   "dimensions": null,
+   "duration": null,
+   "path": "~/Projetos/hyperframes-showcase/components/tilt-card",
+   "files": [
+    "demo.html",
+    "registry-item.json",
+    "tilt-card.html"
+   ],
+   "adaptacao_9x16": "Componente: cole HTML/CSS/JS na composição (ver comentário no topo do arquivo); variáveis em data-composition-variables.",
+   "funcao": "ui / chat / cursor"
+  }
+ ],
+ "_sobre": "Subconjunto já baixado localmente. Inventário completo (447 itens): ../referencias/catalogo_hyperframes.md. Descrições técnicas, sem recomendação de estilo ou nicho."
+}

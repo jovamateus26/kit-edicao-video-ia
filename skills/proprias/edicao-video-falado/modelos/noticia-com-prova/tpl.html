@@ -1,0 +1,245 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[
+    {"id":"handle","type":"string","label":"@ da rede (CTA)","default":"@seu_perfil"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Falha no PHP — Ep. 09</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0d10; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden; background: #0b0d10;
+        color: #e8eaed; font-family: "Montserrat", sans-serif;
+        --mint: #5eead4; --win: #14171c; --line: #2a2f37; --ink: #0b0d10; --red: #f87171; --dim: #6b7480; --sub: #aab2bc;
+      }
+      .mono { font-family: "JetBrains Mono", monospace; }
+      .ico { width: 1em; height: 1em; flex: none; display: block; }
+
+      /* ---------- câmera (rosto) ---------- */
+      #cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 50% 34%; z-index: 0; }
+      #fala { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      #split-bg { position: absolute; left: 0; top: 0; width: 1080px; height: 1010px; background: #0b0d10;
+        border-bottom: 3px solid var(--line); z-index: 1; }
+
+      /* ---------- painel de cima (split) ---------- */
+      .scene { position: absolute; left: 40px; top: 110px; width: 1000px; height: 780px; z-index: 2; }
+      .kick { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.14em; color: var(--mint); }
+
+      /* print real de matéria */
+      .pc { position: absolute; border-radius: 22px; overflow: hidden; background: #ffffff; border: 2px solid var(--line);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+      .pc-src { height: 56px; display: flex; align-items: center; gap: 14px; padding: 0 20px; background: var(--win);
+        border-bottom: 2px solid var(--line); font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 24px; color: var(--sub);
+        white-space: nowrap; }
+      .pc-src .ico { font-size: 26px; }
+      .pc-src b { color: #f4f6f8; font-weight: 700; }
+      .pc-src .dt { margin-left: auto; color: var(--mint); }
+      .pc-shot { position: relative; overflow: hidden; }
+      .pc-shot img { position: absolute; left: 0; display: block; }
+      .hl { position: absolute; background: rgba(94,234,212,0.62); mix-blend-mode: multiply; border-radius: 6px; transform-origin: 0 50%; }
+      .hl.red { background: rgba(248,113,113,0.42); }
+
+      /* gancho: pilha de manchetes */
+      #pile .pc { left: 0; }
+
+      /* diagrama do ataque */
+      #rq-kick { position: absolute; left: 0; top: 0; }
+      .node { position: absolute; top: 64px; width: 260px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+      .tile { width: 170px; height: 170px; border-radius: 36px; background: var(--win); border: 3px solid var(--line);
+        display: flex; align-items: center; justify-content: center; }
+      .tile .ico { font-size: 96px; }
+      .n-lab { font-weight: 800; font-size: 34px; line-height: 1.1; text-align: center; color: #f4f6f8; }
+      #nd-a { left: 0; }
+      #nd-s { right: 0; }
+      #rq-line { position: absolute; left: 250px; right: 250px; top: 147px; height: 4px;
+        background: repeating-linear-gradient(90deg, var(--line) 0 18px, transparent 18px 30px); }
+      #rq-pkt { position: absolute; left: 230px; top: 116px; padding: 10px 20px; border-radius: 14px; background: rgba(248,113,113,0.16);
+        border: 2px solid rgba(248,113,113,0.8); font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; color: var(--red);
+        white-space: nowrap; }
+      #rq-lock { position: absolute; left: 0; right: 0; top: 340px; display: flex; justify-content: center; gap: 16px; }
+      .xpill { display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 999px; background: var(--win);
+        border: 2px solid var(--line); font-weight: 800; font-size: 32px; color: var(--sub); white-space: nowrap; }
+      .xpill .ico { font-size: 30px; }
+      .xpill s { text-decoration-color: var(--red); text-decoration-thickness: 4px; }
+      #rq-term { position: absolute; left: 0; top: 450px; width: 1000px; height: 310px; border-radius: 26px; overflow: hidden;
+        background: var(--win); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+      .win-bar { height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 22px; border-bottom: 2px solid var(--line); }
+      .win-bar i { width: 16px; height: 16px; border-radius: 50%; background: #3a404a; display: block; }
+      .win-bar span { margin-left: 14px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 26px; color: var(--sub); }
+      .t-body { padding: 22px 30px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 34px; line-height: 1.6; color: #e8eaed; white-space: pre; }
+      .t-body .p { color: var(--mint); }
+      .t-body .bad { color: var(--red); }
+      .t-body .ok { color: var(--mint); }
+      .t-body .dim { color: var(--dim); }
+
+      /* países */
+      #gov-chips { position: absolute; left: 0; right: 0; top: 690px; display: flex; gap: 12px; align-items: center; }
+      .cchip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px; background: var(--win);
+        border: 2px solid var(--line); font-weight: 800; font-size: 28px; color: #f4f6f8; white-space: nowrap; }
+      .cchip .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--red); flex: none; }
+      .cchip.k { border-color: rgba(248,113,113,0.7); color: var(--red); font-family: "JetBrains Mono", monospace; font-size: 24px; letter-spacing: 0.08em; }
+
+      /* selo */
+      .stamp { position: absolute; display: inline-flex; align-items: center; gap: 12px; padding: 12px 22px; border-radius: 16px;
+        background: var(--mint); color: var(--ink); font-weight: 900; font-size: 32px; letter-spacing: 0.02em; white-space: nowrap;
+        box-shadow: 0 18px 44px rgba(0,0,0,0.45); }
+      .stamp .ico { font-size: 34px; }
+
+      /* terminal da atualização */
+      #fx-kick { position: absolute; left: 0; top: 50px; }
+      #fx-q { position: absolute; left: 0; top: 96px; font-weight: 900; font-size: 64px; letter-spacing: -0.03em; color: #f4f6f8; }
+      #fx-term { position: absolute; left: 0; top: 210px; width: 1000px; height: 410px; border-radius: 26px; overflow: hidden;
+        background: var(--win); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+      #fx-term .t-body { padding: 30px 34px; font-size: 37px; line-height: 1.75; }
+      #fx-bar { display: inline-block; }
+      #fx-note { position: absolute; left: 0; top: 590px; width: 1000px; display: flex; align-items: flex-start; gap: 18px; padding: 22px 26px;
+        border-radius: 22px; background: rgba(248,113,113,0.10); border: 2px solid rgba(248,113,113,0.55); }
+      #fx-note .ico { font-size: 44px; margin-top: 2px; }
+      #fx-note div { font-weight: 700; font-size: 32px; line-height: 1.3; color: #e8eaed; }
+      #fx-note b { color: var(--red); font-weight: 900; }
+      #fx-note small { display: block; margin-top: 6px; font-family: "JetBrains Mono", monospace; font-size: 22px; color: var(--sub); }
+
+      /* estatística */
+      #st-row { position: absolute; left: 0; top: 0; height: 170px; display: flex; align-items: center; gap: 26px; }
+      #st-num { font-weight: 900; font-size: 172px; line-height: 1; letter-spacing: -0.04em; color: var(--mint); }
+      #st-lab { font-weight: 800; font-size: 44px; line-height: 1.12; color: #f4f6f8; }
+      #st-lab small { display: block; margin-top: 8px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 24px; color: var(--sub); letter-spacing: 0.06em; }
+
+      /* ---------- tela cheia: cards no topo (parede) ---------- */
+      .ov { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+      .card { position: absolute; left: 60px; top: 160px; padding: 24px 32px 28px; border-radius: 30px;
+        background: rgba(20,23,28,0.94); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+      .card-k { display: flex; align-items: center; gap: 12px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px;
+        letter-spacing: 0.14em; color: var(--mint); }
+      .card-k .ico { font-size: 32px; }
+      .card-t { margin-top: 8px; font-weight: 900; font-size: 58px; letter-spacing: -0.03em; line-height: 1.04; color: #f4f6f8; white-space: nowrap; }
+      .crow { margin-top: 16px; display: flex; align-items: center; gap: 16px; font-weight: 700; font-size: 38px; color: #e8eaed; white-space: nowrap; }
+      .crow .ico { font-size: 44px; }
+      .crow .res { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 12px; font-family: "JetBrains Mono", monospace;
+        font-size: 26px; font-weight: 700; }
+      .crow .res .ico { font-size: 26px; }
+      .res.no { color: var(--red); background: rgba(248,113,113,0.14); border: 2px solid rgba(248,113,113,0.6); }
+      .res.yes { color: var(--ink); background: var(--mint); border: 2px solid var(--mint); }
+      #nametag { position: absolute; left: 40px; top: 1080px; padding: 16px 24px 18px; border-radius: 22px; background: rgba(20,23,28,0.92);
+        border: 2px solid var(--line); border-left: 6px solid var(--mint); }
+      #nametag .nm { font-weight: 900; font-size: 40px; letter-spacing: -0.02em; color: #f4f6f8; white-space: nowrap; }
+      #nametag .hd { margin-top: 4px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 25px; color: var(--mint); }
+      #fontes { position: absolute; left: 60px; top: 170px; padding: 14px 22px; border-radius: 16px; background: rgba(20,23,28,0.9);
+        border: 2px solid var(--line); font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 24px; color: var(--sub);
+        letter-spacing: 0.04em; white-space: nowrap; }
+      #fontes b { color: var(--mint); }
+      .slot { position: absolute; left: 0; right: 0; top: 1176px; display: flex; justify-content: center; }
+      .chip { display: inline-flex; align-items: center; gap: 18px; padding: 16px 34px 16px 18px; border-radius: 999px;
+        background: rgba(20,23,28,0.95); border: 2px solid rgba(94,234,212,0.7); font-weight: 700; font-size: 40px; color: #e8eaed;
+        white-space: nowrap; box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+      #end-follow .h { color: var(--mint); font-weight: 900; }
+      .plus { width: 64px; height: 64px; border-radius: 50%; background: var(--mint); display: flex; align-items: center; justify-content: center; flex: none; }
+      .plus .ico { font-size: 38px; }
+
+      /* ---------- legenda ---------- */
+      #caps-w { z-index: 5; }
+      #caps { position: absolute; left: 40px; right: 40px; top: 0; height: 110px; transform-origin: 50% 50%; }
+      .cg { position: absolute; left: 0; right: 0; top: 0; height: 110px; display: flex; justify-content: center; align-items: center;
+        column-gap: 0.26em; font-weight: 900; font-size: 76px; line-height: 1; letter-spacing: -0.015em; white-space: nowrap; }
+      .cw { display: inline-block; color: #ffffff;
+        text-shadow: 0 0 2px #0b0d10, 3px 3px 0 #0b0d10, -3px 3px 0 #0b0d10, 3px -3px 0 #0b0d10, -3px -3px 0 #0b0d10,
+          0 4px 0 #0b0d10, 4px 0 0 #0b0d10, -4px 0 0 #0b0d10, 0 -4px 0 #0b0d10, 0 10px 24px rgba(0,0,0,0.55); }
+      .cw.k { color: var(--mint); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="%%DUR%%" data-width="1080" data-height="1920" data-fps="30">
+      <div id="cam">
+        <video id="fala" class="clip" src="assets/footage/fala.mp4" data-start="0" data-duration="%%DUR%%" data-track-index="0" playsinline data-has-audio="true"></video>
+      </div>
+      <div id="split-bg"></div>
+
+%%SCENES%%
+
+      <!-- tela cheia / sobreposições -->
+      <div id="ov-name" class="ov clip" data-start="%%NAME_S%%" data-duration="%%NAME_D%%" data-track-index="2">
+        <div id="nametag"><div class="nm">Seu Nome</div><div class="hd" data-var-text="handle">@seu_perfil</div></div>
+      </div>
+
+      <div id="ov-cur" class="ov clip" data-start="%%CUR_S%%" data-duration="%%CUR_D%%" data-track-index="2">
+        <div class="card" id="cd-cur">
+          <div class="card-k"><svg viewBox="0 0 24 24" class="ico"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" fill="none" stroke="#5eead4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>CURIOSIDADE</div>
+          <div class="card-t">Não é falha nova</div>
+        </div>
+      </div>
+
+      <div id="ov-com" class="ov clip" data-start="%%COM_S%%" data-duration="%%COM_D%%" data-track-index="2">
+        <div class="card" id="cd-com">
+          <div class="card-k">QUEM ACHOU A FALHA?</div>
+          <div class="crow" id="cr-h"><svg viewBox="0 0 24 24" class="ico"><circle cx="9" cy="8" r="3.2" fill="none" stroke="#e8eaed" stroke-width="2"/><path d="M3 20c.6-3.6 3-5.6 6-5.6s5.4 2 6 5.6" fill="none" stroke="#e8eaed" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="9" r="2.6" fill="none" stroke="#e8eaed" stroke-width="2"/><path d="M17 14.6c2.2.2 3.7 1.8 4.2 4.6" fill="none" stroke="#e8eaed" stroke-width="2" stroke-linecap="round"/></svg><span>Revisores humanos · +10 anos</span><span class="res no" id="cr-hx"><svg viewBox="0 0 24 24" class="ico"><path d="M6 6l12 12M18 6L6 18" stroke="#f87171" stroke-width="3" stroke-linecap="round"/></svg>não viram</span></div>
+          <div class="crow" id="cr-i"><svg viewBox="0 0 24 24" class="ico"><path d="M12 2.5l2.4 6.1L20.5 11l-6.1 2.4L12 19.5l-2.4-6.1L3.5 11l6.1-2.4z" fill="#5eead4"/></svg><span>Inteligência artificial</span><span class="res yes"><svg viewBox="0 0 24 24" class="ico"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0b0d10" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>achou</span></div>
+        </div>
+      </div>
+
+      <div id="ov-end" class="ov clip" data-start="%%END_S%%" data-duration="%%END_D%%" data-track-index="3">
+        <div id="fontes">FONTES: <b>UOL · BBC NEWS BRASIL · OLHAR DIGITAL · TERRA</b></div>
+        <div class="slot" style="top: 250px"><div class="chip" id="c-follow"><span class="plus"><svg viewBox="0 0 24 24" class="ico"><path d="M12 5v14M5 12h14" stroke="#0b0d10" stroke-width="3.2" stroke-linecap="round"/></svg></span><div id="end-follow">Segue <span class="h" data-var-text="handle">@seu_perfil</span> pra não perder</div></div></div>
+      </div>
+
+      <!-- legenda palavra a palavra -->
+      <div id="caps-w" class="ov clip" data-start="0" data-duration="%%DUR%%" data-track-index="4">
+        <div id="caps">
+%%CAPS_DOM%%
+        </div>
+      </div>
+
+%%SFX%%
+    </div>
+    <script>
+      const D = %%DATA%%;
+      const tl = gsap.timeline({ paused: true });
+      const IR = { immediateRender: false };
+      function pop(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: d, ease: "back.out(1.8)", ...IR }, t);
+      }
+      function rise(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: d, ease: "power3.out", ...IR }, t);
+      }
+      function slideIn(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, x: -36 }, { opacity: 1, x: 0, duration: d, ease: "power3.out", ...IR }, t);
+      }
+
+      // ---------- layout: split (print + rosto embaixo) / tela cheia, zoom seco nos cortes ----------
+      const SPLIT = { y: %%SPLIT_Y%%, cap: 900, cs: 0.86 }, FULL = { y: 0, cap: 1330, cs: 1 };
+      gsap.set("#cam", { y: SPLIT.y, scale: 1 });
+      gsap.set("#caps", { y: SPLIT.cap, scale: SPLIT.cs });
+      D.cam.forEach(([t, mode, s]) => {
+        const L = mode === "split" ? SPLIT : FULL;
+        tl.set("#cam", { y: L.y, scale: s }, t);
+        tl.set("#split-bg", { opacity: mode === "split" ? 1 : 0 }, t);
+        tl.set("#caps", { y: L.cap, scale: L.cs }, t);
+      });
+
+      // todos os marca-textos começam recolhidos, menos os já marcados no 1º quadro (capa)
+      gsap.set(".hl", { scaleX: 0 });
+      D.premarked.forEach(id => gsap.set("#" + id, { scaleX: 1 }));
+      // marca-texto: cada linha da frase varre em sequência (make.py reparte o tempo pela largura)
+      D.marks.forEach(([id, t, d]) => tl.fromTo("#" + id, { scaleX: 0 }, { scaleX: 1, duration: d, ease: "none", ...IR }, t));
+
+%%JS%%
+
+      // ---------- legenda palavra a palavra ----------
+      gsap.set([".cg", ".cw"], { opacity: 0 });
+      D.caps.forEach((g, gi) => {
+        tl.set("#g" + gi, { opacity: 1 }, g.t0);
+        g.w.forEach((w, wi) => {
+          tl.fromTo("#w" + gi + "_" + wi, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out", ...IR }, w.t);
+        });
+        tl.set("#g" + gi, { opacity: 0 }, g.t1);
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

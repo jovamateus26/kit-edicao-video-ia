@@ -1,0 +1,296 @@
+{
+ "_sobre": "Reel 3 — Instalando Sailfish OS no Xperia XZ2 (v3, 2026-10-17). Tempos = linha do tempo do corte final; deixas ancoradas nas palavras da legenda.",
+ "composition_id": "reel3-sailfish",
+ "video": "input-video.mp4",
+ "duration": 79.08,
+ "fps": 30,
+ "width": 1080,
+ "height": 1920,
+ "badges": [
+  {
+   "id": "c01",
+   "model": "pill-banner",
+   "start": 0.25,
+   "end": 3.55,
+   "fields": {
+    "chip": "TENTATIVA #2",
+    "accent": "SAILFISH OS",
+    "title": "no Xperia XZ2"
+   },
+   "cues": {
+    "chip": 0.35,
+    "title": 0.5
+   }
+  },
+  {
+   "id": "c02",
+   "model": "title-chips",
+   "start": 3.7,
+   "end": 10.95,
+   "fields": {
+    "title": "MINI SERVIDOR",
+    "accent": "LINUX",
+    "chips": [
+     "Xperia **XZ2**",
+     "Snapdragon **845**",
+     "**4 GB** RAM",
+     "**64 GB**"
+    ]
+   },
+   "cues": {
+    "title": 4.2,
+    "chips": 7.55
+   }
+  },
+  {
+   "id": "c03",
+   "model": "swap",
+   "start": 11.1,
+   "end": 17.55,
+   "fields": {
+    "kicker": "O PLANO",
+    "old": "Android",
+    "new": "Sailfish OS",
+    "new_sub": "GNU/Linux de verdade"
+   },
+   "cues": {
+    "kicker": 11.15,
+    "old": 11.4,
+    "strike": 12.4,
+    "new": 12.92
+   }
+  },
+  {
+   "id": "c04",
+   "model": "keycaps-led",
+   "start": 17.7,
+   "end": 22.2,
+   "fields": {
+    "kicker": "MODO FASTBOOT",
+    "keys": [
+     "VOL **+**",
+     "CABO USB"
+    ],
+    "led_from": "red",
+    "led_to": "blue",
+    "from_text": "vermelho…",
+    "to_text": "AZUL = fastboot ativo"
+   },
+   "cues": {
+    "kicker": 17.75,
+    "keys": 17.9,
+    "led": 19.3,
+    "led_switch": 21.25
+   }
+  },
+  {
+   "id": "c05",
+   "model": "terminal-typing",
+   "start": 23.15,
+   "end": 30.8,
+   "fields": {
+    "window": "user@homelab: ~/sailfish",
+    "command": "fastboot devices",
+    "output": "**QV7104MK2Z**   fastboot"
+   },
+   "cues": {
+    "type": 28.3,
+    "output": 29.75
+   }
+  },
+  {
+   "id": "c06",
+   "model": "ok-pill",
+   "start": 30.95,
+   "end": 34.2,
+   "fields": {
+    "text": "XPERIA XZ2 DETECTADO"
+   },
+   "cues": {
+    "pop": 31.0
+   }
+  },
+  {
+   "id": "c07",
+   "model": "ab-slots",
+   "start": 34.35,
+   "end": 45.0,
+   "fields": {
+    "kicker": "2 SLOTS DE SISTEMA",
+    "options": [
+     {
+      "name": "A",
+      "label": "system_a"
+     },
+     {
+      "name": "B",
+      "label": "system_b"
+     }
+    ],
+    "selected": 0,
+    "selected_label": "ATIVO"
+   },
+   "cues": {
+    "kicker": 34.4,
+    "options": 34.75,
+    "select": 41.65
+   }
+  },
+  {
+   "id": "c08",
+   "model": "progress-pill",
+   "start": 45.15,
+   "end": 50.45,
+   "fields": {
+    "label": "GRAVANDO SAILFISH OS",
+    "done_label": "FLASH CONCLUÍDO"
+   },
+   "cues": {
+    "progress_start": 45.45,
+    "progress_end": 47.8,
+    "done": 48.75
+   }
+  },
+  {
+   "id": "c09",
+   "model": "stamp",
+   "start": 50.6,
+   "end": 54.5,
+   "fields": {
+    "kicker": "CABO USB REMOVIDO · PRIMEIRO BOOT",
+    "text": "HORA DA",
+    "accent": "VERDADE"
+   },
+   "cues": {
+    "kicker": 50.7,
+    "stamp": 53.55
+   }
+  },
+  {
+   "id": "c10",
+   "model": "checklist-row",
+   "start": 54.6,
+   "end": 61.5,
+   "fields": {
+    "kicker": "PRIMEIRO BOOT",
+    "items": [
+     "Alerta normal",
+     "Logo SONY",
+     "Sem erro"
+    ]
+   },
+   "cues": {
+    "kicker": 54.65,
+    "items": [
+     55.2,
+     57.75,
+     59.75
+    ]
+   }
+  },
+  {
+   "id": "c11",
+   "model": "vertical-win",
+   "start": 61.6,
+   "end": 64.9,
+   "fields": {
+    "line1": "DEU",
+    "line2": "BOM!",
+    "sub": "SAILFISH OS\nINICIANDO"
+   },
+   "cues": {
+    "stamp": 62.8,
+    "sub": 63.6
+   },
+   "xs": [
+    "right"
+   ]
+  },
+  {
+   "id": "c12",
+   "model": "side-status",
+   "start": 69.65,
+   "end": 70.9,
+   "fields": {
+    "kicker": "SAILFISH OS · ONLINE",
+    "title": "Terminal",
+    "accent": "nativo",
+    "chip": "Shell root + **SSH**"
+   },
+   "cues": {
+    "kicker": 69.7,
+    "title": 69.8,
+    "chip": 70.0
+   },
+   "xs": [
+    "right"
+   ]
+  },
+  {
+   "id": "c13",
+   "model": "final-cta",
+   "start": 70.95,
+   "end": 79.08,
+   "fields": {
+    "kicker": "STATUS: PRONTO",
+    "title": "MINI SERVIDOR",
+    "accent": "ONLINE",
+    "next": "descobrir o IP e conectar via **SSH**",
+    "cta": "Comenta **LINUX** que eu te mando o tutorial"
+   },
+   "cues": {
+    "kicker": 71.0,
+    "title": 73.8,
+    "next": 76.3,
+    "cta": 77.3
+   }
+  }
+ ],
+ "captions": {
+  "model": "caption-pill-karaoke",
+  "words": "reel3_palavras.json",
+  "keywords": [
+   "sailfish",
+   "fastboot",
+   "linux",
+   "servidor",
+   "bom"
+  ],
+  "vars": {
+   "COLOR_ACTIVE": "#FFEA00",
+   "COLOR_INACTIVE": "#FFFFFF",
+   "FONT_FAMILY": "Poppins",
+   "PAUSE_THRESHOLD": 0.35
+  },
+  "case": "upper",
+  "group": {
+   "max_words": 3,
+   "max_chars": 20,
+   "pause": 0.35
+  },
+  "scale": 0.75,
+  "baseline_y": 1640,
+  "css": ".caption-pill { background: rgba(10, 12, 18, 0.82) !important; box-shadow: 0 10px 34px rgba(0,0,0,.45) !important; }"
+ },
+ "estilo": {
+  "badges": {
+   "legibility": true
+  },
+  "motion": {
+   "in": {
+    "x": 120,
+    "y": 0,
+    "blur": 12,
+    "duration": 0.5,
+    "ease": "power4.out"
+   },
+   "out": {
+    "x": -120,
+    "y": 0,
+    "blur": 12,
+    "duration": 0.32,
+    "ease": "power4.in"
+   }
+  }
+ }
+}

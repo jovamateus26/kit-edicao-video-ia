@@ -1,0 +1,369 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[
+    {"id":"handle","type":"string","label":"@ da rede (CTA)","default":"@seu_perfil"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Locutor com IA — Ep. 08</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0d10; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden; background: #0b0d10;
+        color: #e8eaed; font-family: "Montserrat", sans-serif;
+        --mint: #5eead4; --win: #14171c; --line: #2a2f37; --ink: #0b0d10; --red: #f87171; --dim: #6b7480; --sub: #aab2bc;
+      }
+      .mono { font-family: "JetBrains Mono", monospace; }
+      .ico { width: 1em; height: 1em; flex: none; display: block; }
+
+      /* ---------- câmera (rosto) ---------- */
+      #cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 50% 34%; z-index: 0; }
+      #fala { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      #split-bg { position: absolute; left: 0; top: 0; width: 1080px; height: 1010px; background: #0b0d10;
+        border-bottom: 3px solid var(--line); z-index: 1; }
+
+      /* ---------- painel de cima (split) ---------- */
+      .scene { position: absolute; left: 40px; top: 120px; width: 1000px; height: 760px; z-index: 2; }
+      .kick { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.14em; color: var(--mint); }
+
+      /* player da voz de IA */
+      .player { position: absolute; left: 0; top: 400px; width: 1000px; height: 360px; border-radius: 32px;
+        background: var(--win); border: 2px solid var(--line); padding: 28px 40px 0; box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+      .p-head { display: flex; align-items: center; gap: 18px; height: 52px; }
+      .onair { display: flex; align-items: center; gap: 12px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px;
+        letter-spacing: 0.1em; color: var(--red); background: rgba(248,113,113,0.14); border: 2px solid rgba(248,113,113,0.6);
+        padding: 8px 16px; border-radius: 12px; }
+      .dot { width: 16px; height: 16px; border-radius: 50%; background: var(--red); flex: none; }
+      .p-name { font-weight: 700; font-size: 34px; color: #e8eaed; }
+      .p-ai { margin-left: auto; display: flex; align-items: center; gap: 10px; font-family: "JetBrains Mono", monospace; font-weight: 700;
+        font-size: 28px; color: var(--mint); border: 2px solid rgba(94,234,212,0.5); padding: 8px 14px; border-radius: 12px; }
+      .p-ai .ico { font-size: 28px; }
+      .p-text { position: relative; margin-top: 20px; height: 128px; }
+      .p-line { position: absolute; left: 0; right: 0; top: 0; font-weight: 900; font-size: 52px; line-height: 1.16;
+        letter-spacing: -0.015em; color: var(--dim); }
+      .p-line .kw { display: inline-block; margin-right: 0.24em; }
+      .p-wave { position: absolute; left: 40px; right: 40px; bottom: 30px; height: 110px; display: flex; align-items: center;
+        justify-content: space-between; }
+      .bar { width: 13px; border-radius: 7px; background: var(--line); flex: none; }
+
+      /* gancho */
+      #h-kick { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 12px; padding: 10px 20px;
+        border: 2px solid rgba(94,234,212,0.5); border-radius: 14px; }
+      #h-kick .ico { font-size: 30px; }
+      #h1 { position: absolute; left: 0; top: 78px; font-weight: 900; font-size: 92px; line-height: 1; letter-spacing: -0.035em; color: #f4f6f8; }
+      #h2 { position: absolute; left: 0; top: 190px; font-weight: 900; font-size: 112px; line-height: 1; letter-spacing: -0.03em;
+        color: var(--ink); background: var(--mint); padding: 14px 30px 20px; border-radius: 22px; }
+
+      /* IDE */
+      .win { position: absolute; left: 0; top: 0; width: 1000px; height: 620px; border-radius: 26px; overflow: hidden;
+        background: var(--win); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+      .win-bar { height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 22px; border-bottom: 2px solid var(--line); }
+      .win-bar i { width: 16px; height: 16px; border-radius: 50%; background: #3a404a; display: block; }
+      .win-bar span { margin-left: 14px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; color: var(--sub); }
+      .shot { position: absolute; left: 0; top: 56px; width: 1000px; height: 562px; overflow: hidden; }
+      #shot-img { position: absolute; left: 0; top: 0; width: 1000px; height: 562.5px; display: block; transform-origin: 0 0; }
+      .ide-chip { position: absolute; left: 0; display: inline-flex; align-items: center; gap: 14px; padding: 14px 26px; border-radius: 999px;
+        background: var(--win); border: 2px solid var(--line); font-weight: 700; font-size: 38px; color: #e8eaed; white-space: nowrap; }
+      .ide-chip b { color: var(--mint); font-weight: 900; }
+      .ide-chip .ico { font-size: 40px; }
+      #chip-ag { top: 648px; }
+      #chip-run { top: 648px; left: auto; right: 0; border-color: rgba(94,234,212,0.6); }
+
+      /* fluxo */
+      #fl-kick { position: absolute; left: 0; top: 0; }
+      .row { position: absolute; left: 0; right: 0; height: 112px; display: flex; align-items: center; gap: 28px; }
+      .tile { width: 104px; height: 104px; border-radius: 26px; background: var(--win); border: 3px solid var(--line); flex: none;
+        display: flex; align-items: center; justify-content: center; }
+      .tile .ico { font-size: 58px; }
+      .tile img { width: 58px; height: 58px; display: block; }
+      .r-col { display: flex; flex-direction: column; gap: 8px; }
+      .r-t { font-weight: 900; font-size: 44px; letter-spacing: -0.02em; line-height: 1.05; color: #f4f6f8; white-space: nowrap; }
+      .r-p { display: flex; gap: 12px; }
+      .pill { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; padding: 6px 16px; border-radius: 12px;
+        background: rgba(94,234,212,0.08); border: 2px solid rgba(94,234,212,0.4); color: var(--mint); }
+      .pill.red { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.6); color: var(--red); display: inline-flex; align-items: center; gap: 10px; }
+      .pill.on { background: var(--mint); color: var(--ink); border-color: var(--mint); }
+      .wire { position: absolute; left: 50px; width: 4px; height: 26px; background: var(--mint); transform-origin: 50% 0; }
+
+      /* no ar */
+      #air-pill { position: absolute; left: 0; top: 10px; display: inline-flex; align-items: center; gap: 22px; padding: 12px 34px 16px;
+        border-radius: 26px; background: rgba(248,113,113,0.14); border: 3px solid rgba(248,113,113,0.7);
+        font-weight: 900; font-size: 96px; line-height: 1; letter-spacing: -0.02em; color: var(--red); }
+      #air-pill .dot { width: 34px; height: 34px; }
+      #air-name { position: absolute; left: 0; top: 172px; font-weight: 900; font-size: 64px; letter-spacing: -0.03em; color: #f4f6f8; }
+      #air-sub { position: absolute; left: 0; top: 262px; font-weight: 700; font-size: 30px; letter-spacing: 0.06em; color: var(--sub); }
+
+      /* simulador */
+      #sim-kick { position: absolute; left: 0; top: 0; }
+      #sim-box { position: absolute; left: 0; top: 60px; width: 1000px; height: 160px; border-radius: 26px; background: var(--win);
+        border: 2px solid var(--line); padding: 22px 32px; }
+      #sim-box .lab { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.12em; color: var(--sub); }
+      #sim-typed { margin-top: 14px; white-space: pre; font-weight: 900; font-size: 46px; letter-spacing: -0.015em; color: #f4f6f8; }
+      #sim-ph { position: absolute; left: 32px; top: 74px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 34px; color: var(--dim); }
+      #sim-arrow { position: absolute; left: 0; top: 262px; display: flex; align-items: center; gap: 16px; font-weight: 700; font-size: 36px; color: var(--sub); }
+      #sim-arrow .ico { font-size: 48px; }
+      #sim-arrow b { color: var(--mint); font-weight: 900; }
+      #sim-wait { position: absolute; left: 0; top: 400px; width: 1000px; height: 360px; border-radius: 32px; border: 3px dashed var(--line);
+        display: flex; align-items: center; justify-content: center; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 30px; color: var(--dim); }
+
+      /* ---------- tela cheia: cards e chips ---------- */
+      .ov { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+      .card { position: absolute; left: 60px; top: 150px; padding: 26px 34px 30px; border-radius: 30px;
+        background: rgba(20,23,28,0.94); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+      .card-k { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.14em; color: var(--mint); }
+      .card-t { margin-top: 8px; font-weight: 900; font-size: 64px; letter-spacing: -0.03em; line-height: 1.04; color: #f4f6f8;
+        display: flex; align-items: center; gap: 20px; white-space: nowrap; }
+      .card-r { margin-top: 12px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 38px; color: #e8eaed; white-space: nowrap; }
+      .card-r .ico { font-size: 42px; }
+      .card-r b { color: var(--mint); font-weight: 900; }
+      .tag { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; padding: 8px 16px; border-radius: 12px;
+        background: rgba(94,234,212,0.12); color: var(--mint); border: 2px solid rgba(94,234,212,0.5); letter-spacing: 0.06em; }
+      .slot { position: absolute; left: 0; right: 0; top: 1176px; display: flex; justify-content: center; }
+      .chip { display: inline-flex; align-items: center; gap: 18px; padding: 16px 34px 16px 18px; border-radius: 999px;
+        background: rgba(20,23,28,0.95); border: 2px solid rgba(94,234,212,0.7); font-weight: 700; font-size: 40px; color: #e8eaed;
+        white-space: nowrap; box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+      #end-follow .h { color: var(--mint); font-weight: 900; }
+      .plus { width: 64px; height: 64px; border-radius: 50%; background: var(--mint); display: flex; align-items: center; justify-content: center; flex: none; }
+      .plus .ico { font-size: 38px; }
+
+      /* ---------- legenda ---------- */
+      #caps-w { z-index: 5; }
+      #caps { position: absolute; left: 40px; right: 40px; top: 0; height: 110px; transform-origin: 50% 50%; }
+      .cg { position: absolute; left: 0; right: 0; top: 0; height: 110px; display: flex; justify-content: center; align-items: center;
+        column-gap: 0.26em; font-weight: 900; font-size: 76px; line-height: 1; letter-spacing: -0.015em; white-space: nowrap; }
+      .cw { display: inline-block; color: #ffffff;
+        text-shadow: 0 0 2px #0b0d10, 3px 3px 0 #0b0d10, -3px 3px 0 #0b0d10, 3px -3px 0 #0b0d10, -3px -3px 0 #0b0d10,
+          0 4px 0 #0b0d10, 4px 0 0 #0b0d10, -4px 0 0 #0b0d10, 0 -4px 0 #0b0d10, 0 10px 24px rgba(0,0,0,0.55); }
+      .cw.k { color: var(--mint); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="%%DUR%%" data-width="1080" data-height="1920" data-fps="30">
+      <div id="cam">
+        <video id="fala" class="clip" src="assets/footage/fala.mp4" data-start="0" data-duration="%%DUR%%" data-track-index="0" playsinline data-has-audio="true"></video>
+      </div>
+      <div id="split-bg"></div>
+
+      <!-- 1. gancho: a prova (voz de IA) — 1º quadro = capa -->
+      <div id="sc-hook" class="scene clip" data-start="0" data-duration="%%HOOK_D%%" data-track-index="1">
+        <div id="h-kick" class="kick"><svg viewBox="0 0 24 24" class="ico"><rect x="4" y="7" width="16" height="12" rx="3" fill="none" stroke="#5eead4" stroke-width="2"/><circle cx="9.5" cy="13" r="1.6" fill="#5eead4"/><circle cx="14.5" cy="13" r="1.6" fill="#5eead4"/><path d="M12 7V4M9 4h6" stroke="#5eead4" stroke-width="2" stroke-linecap="round"/></svg>VOZ 100% GERADA POR IA</div>
+        <div id="h1">Esse locutor</div>
+        <div id="h2">NÃO EXISTE</div>
+        %%PLAYER_HOOK%%
+      </div>
+
+      <!-- 3. IDE real (Antigravity) -->
+      <div id="sc-ide" class="scene clip" data-start="%%IDE_S%%" data-duration="%%IDE_D%%" data-track-index="1">
+        <div class="win" id="ide-win">
+          <div class="win-bar"><i></i><i></i><i></i><span>locutor — Antigravity IDE</span></div>
+          <div class="shot"><img id="shot-img" src="assets/img/antigravity.jpg" alt="" /></div>
+        </div>
+        <div class="ide-chip" id="chip-ag"><svg viewBox="0 0 24 24" class="ico"><path d="M12 3l2.2 5.6L20 10l-5.8 1.4L12 17l-2.2-5.6L4 10l5.8-1.4z" fill="#5eead4"/><path d="M18.5 15.5l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z" fill="#5eead4"/></svg><span><b>Antigravity</b> · agente de IA</span></div>
+        <div class="ide-chip" id="chip-run"><svg viewBox="0 0 24 24" class="ico"><circle cx="12" cy="12" r="10" fill="#5eead4"/><path d="M7.5 12.3l3 3 6-6.3" fill="none" stroke="#0b0d10" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>rodando</span></div>
+      </div>
+
+      <!-- 4. como funciona -->
+      <div id="sc-flow" class="scene clip" data-start="%%FLOW_S%%" data-duration="%%FLOW_D%%" data-track-index="1">
+        <div id="fl-kick" class="kick">COMO VAI FUNCIONAR</div>
+        <div class="row" id="r1" style="top: 64px">
+          <div class="tile"><img src="assets/img/whatsapp.svg" alt="" /></div>
+          <div class="r-col"><div class="r-t">Chega a mensagem no zap</div>
+            <div class="r-p"><span class="pill" id="p-texto">texto</span><span class="pill" id="p-audio">áudio</span></div></div>
+        </div>
+        <div class="wire" id="w1" style="top: 176px"></div>
+        <div class="row" id="r2" style="top: 202px">
+          <div class="tile"><svg viewBox="0 0 24 24" class="ico"><path d="M12 2.5l2.4 6.1L20.5 11l-6.1 2.4L12 19.5l-2.4-6.1L3.5 11l6.1-2.4z" fill="#5eead4"/></svg></div>
+          <div class="r-col"><div class="r-t">A IA identifica o pedido</div>
+            <div class="r-p"><span class="pill" id="p-recado">recado</span><span class="pill" id="p-musica">música</span></div></div>
+        </div>
+        <div class="wire" id="w2" style="top: 314px"></div>
+        <div class="row" id="r3" style="top: 340px">
+          <div class="tile"><svg viewBox="0 0 24 24" class="ico"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="#5eead4" stroke-width="2.6"/><path d="M15 15l5 5" stroke="#5eead4" stroke-width="2.8" stroke-linecap="round"/></svg></div>
+          <div class="r-col"><div class="r-t">Procura a música no YouTube</div></div>
+        </div>
+        <div class="wire" id="w3" style="top: 452px"></div>
+        <div class="row" id="r4" style="top: 478px">
+          <div class="tile"><svg viewBox="0 0 24 24" class="ico"><path d="M12 4v10M7.5 10l4.5 4.5L16.5 10" fill="none" stroke="#5eead4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="#5eead4" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+          <div class="r-col"><div class="r-t">Baixa o áudio</div></div>
+        </div>
+        <div class="wire" id="w4" style="top: 590px"></div>
+        <div class="row" id="r5" style="top: 616px">
+          <div class="tile"><svg viewBox="0 0 24 24" class="ico"><circle cx="12" cy="12" r="2.4" fill="#5eead4"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round"/></svg></div>
+          <div class="r-col"><div class="r-t">Deixa pronto e transmite</div>
+            <div class="r-p"><span class="pill red" id="p-noar"><span class="dot"></span>NO AR · Exemplo FM</span></div></div>
+        </div>
+      </div>
+
+      <!-- 5. a prova de novo: pedido de música no ar -->
+      <div id="sc-air" class="scene clip" data-start="%%AIR_S%%" data-duration="%%AIR_D%%" data-track-index="1">
+        <div id="air-pill"><span class="dot"></span>NO AR</div>
+        <div id="air-name">Rádio Exemplo FM</div>
+        <div id="air-sub" class="mono">PEDIDO DE MÚSICA · VIA ZAP</div>
+        %%PLAYER_AIR%%
+      </div>
+
+      <!-- 8. simulador: texto -> áudio (emenda no 1º quadro) -->
+      <div id="sc-sim" class="scene clip" data-start="%%SIM_S%%" data-duration="%%SIM_D%%" data-track-index="1">
+        <div id="sim-kick" class="kick">SIMULADOR · TEXTO → ÁUDIO</div>
+        <div id="sim-box"><div class="lab">MENSAGEM</div><div id="sim-typed">%%TYPED%%</div><div id="sim-ph">digite a mensagem…</div></div>
+        <div id="sim-arrow"><svg viewBox="0 0 24 24" class="ico"><path d="M12 4v15M6 13l6 6 6-6" fill="none" stroke="#5eead4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>vira voz com o <b>Piper</b></span></div>
+        <div id="sim-wait">aguardando texto…</div>
+        %%PLAYER_SIM%%
+      </div>
+
+      <!-- tela cheia: cards e chips -->
+      <div id="ov-proj" class="ov clip" data-start="%%PROJ_S%%" data-duration="%%PROJ_D%%" data-track-index="2">
+        <div class="card" id="cd-proj">
+          <div class="card-k">NOVO PROJETO</div>
+          <div class="card-t">Locutor com IA</div>
+          <div class="card-r" id="cd-proj-r"><svg viewBox="0 0 24 24" class="ico"><circle cx="12" cy="12" r="2.4" fill="#5eead4"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round"/></svg><span>pra rádio <b>Exemplo FM</b></span></div>
+        </div>
+      </div>
+
+      <div id="ov-piper" class="ov clip" data-start="%%PIPER_S%%" data-duration="%%PIPER_D%%" data-track-index="2">
+        <div class="card" id="cd-piper">
+          <div class="card-k">MODELO DE VOZ</div>
+          <div class="card-t">Piper <span class="tag">TTS</span></div>
+          <div class="card-r" id="cd-piper-r"><svg viewBox="0 0 24 24" class="ico"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="#5eead4"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round"/></svg><span>gerou a voz do <b>locutor</b></span></div>
+        </div>
+      </div>
+
+      <div id="ov-novo" class="ov clip" data-start="%%NOVO_S%%" data-duration="%%NOVO_D%%" data-track-index="2">
+        <div class="card" id="cd-novo">
+          <div class="card-k">VEM AÍ</div>
+          <div class="card-t">Modelo de voz novo <span class="tag" id="tag-novo">EM BREVE</span></div>
+        </div>
+      </div>
+
+      <div id="ov-follow" class="ov clip" data-start="%%FOL_S%%" data-duration="%%FOL_D%%" data-track-index="3">
+        <div class="slot"><div class="chip" id="c-follow"><span class="plus"><svg viewBox="0 0 24 24" class="ico"><path d="M12 5v14M5 12h14" stroke="#0b0d10" stroke-width="3.2" stroke-linecap="round"/></svg></span><div id="end-follow">Segue <span class="h" data-var-text="handle">@seu_perfil</span> pra não perder</div></div></div>
+      </div>
+
+      <!-- legenda palavra a palavra -->
+      <div id="caps-w" class="ov clip" data-start="%%CAP_S%%" data-duration="%%CAP_D%%" data-track-index="4">
+        <div id="caps">
+%%CAPS_DOM%%
+        </div>
+      </div>
+
+%%SFX%%
+    </div>
+    <script>
+      const D = %%DATA%%;
+      const tl = gsap.timeline({ paused: true });
+      const IR = { immediateRender: false };
+      function pop(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: d, ease: "back.out(1.8)", ...IR }, t);
+      }
+      function rise(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: d, ease: "power3.out", ...IR }, t);
+      }
+      function slideIn(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, x: -36 }, { opacity: 1, x: 0, duration: d, ease: "power3.out", ...IR }, t);
+      }
+
+      // ---------- layout: split (painel + rosto embaixo) / tela cheia, zoom seco nos cortes ----------
+      const SPLIT = { y: 600, cap: 902, cs: 0.86 }, FULL = { y: 0, cap: 1330, cs: 1 };
+      gsap.set("#cam", { y: SPLIT.y, scale: 1 });
+      gsap.set("#caps", { y: SPLIT.cap, scale: SPLIT.cs });
+      D.cam.forEach(([t, mode, s]) => {
+        const L = mode === "split" ? SPLIT : FULL;
+        tl.set("#cam", { y: L.y, scale: s }, t);
+        tl.set("#split-bg", { opacity: mode === "split" ? 1 : 0 }, t);
+        tl.set("#caps", { y: L.cap, scale: L.cs }, t);
+      });
+
+      // ---------- player: karaokê + onda (barra acende quando toca) ----------
+      function karaoke(prefix, words) {
+        words.forEach((w, i) => tl.set("#" + prefix + i, { color: w.m ? "#5eead4" : "#f4f6f8" }, w.t));
+      }
+      function wave(prefix, n, t0, t1) {
+        for (let i = 0; i < n; i++) tl.set("#" + prefix + i, { backgroundColor: "#5eead4" }, t0 + (i / n) * (t1 - t0));
+      }
+      karaoke("hk", D.hook_words);
+      wave("hb", D.bars1.length, D.ai1[0], D.ai1[1]);
+
+      // ---------- IDE: câmera passeando pelo print real ----------
+      const Z = D.ide;
+      rise("#ide-win", Z.s, 0.32);
+      tl.fromTo("#shot-img", { x: 0, y: 0, scale: 1 }, { x: -2345, y: -1463, scale: 3.602, duration: 0.55, ease: "power3.inOut", ...IR }, Z.agent);
+      tl.to("#shot-img", { x: 0, y: -525, scale: 2.526, duration: 0.55, ease: "power3.inOut" }, Z.tree);
+      gsap.set(["#chip-ag", "#chip-run"], { opacity: 0 });
+      pop("#chip-ag", Z.ag);
+      pop("#chip-run", Z.run);
+
+      // ---------- fluxo ----------
+      const F = D.flow;
+      gsap.set(["#r1", "#r2", "#r3", "#r4", "#r5", "#p-texto", "#p-audio", "#p-recado", "#p-musica", "#p-noar"], { opacity: 0 });
+      gsap.set(["#w1", "#w2", "#w3", "#w4"], { scaleY: 0 });
+      rise("#fl-kick", F.s, 0.28);
+      ["r1", "r2", "r3", "r4", "r5"].forEach((r, i) => {
+        if (i > 0) tl.fromTo("#w" + i, { scaleY: 0 }, { scaleY: 1, duration: 0.2, ease: "power2.out", ...IR }, F[r] - 0.12);
+        slideIn("#" + r, F[r], 0.32);
+        if (i > 0) tl.to("#r" + i + " .r-t", { color: "#aab2bc", duration: 0.2 }, F[r]);
+      });
+      pop("#p-texto", F.texto, 0.26); pop("#p-audio", F.audio, 0.26);
+      pop("#p-recado", F.recado, 0.26); pop("#p-musica", F.musica, 0.26);
+      tl.to("#p-musica", { backgroundColor: "#5eead4", color: "#0b0d10", borderColor: "#5eead4", duration: 0.18 }, F.pick);
+      tl.to("#p-recado", { opacity: 0.35, duration: 0.2 }, F.pick);
+      pop("#p-noar", F.noar, 0.34);
+
+      // ---------- no ar: pedido de música ----------
+      const A = D.air;
+      pop("#air-pill", A.s, 0.34);
+      rise("#air-name", A.s + 0.1, 0.3);
+      rise("#air-sub", A.s + 0.18, 0.3);
+      rise("#sc-air .player", A.s + 0.06, 0.32);
+      gsap.set(["#al1", "#al2"], { opacity: 0 });
+      A.lines.forEach((ln, li) => {
+        if (li > 0) { tl.set("#al" + (li - 1), { opacity: 0 }, ln.t0); }
+        tl.set("#al" + li, { opacity: 1 }, ln.t0);
+      });
+      karaoke("ak", D.air_words);
+      wave("ab", D.bars2.length, D.ai2[0], D.ai2[1]);
+
+      // ---------- simulador: digita a mensagem e gera o áudio (= player do 1º quadro) ----------
+      const S = D.sim;
+      rise("#sim-kick", S.s, 0.28);
+      rise("#sim-box", S.s + 0.06, 0.3);
+      rise("#sim-arrow", S.s + 0.12, 0.3);
+      rise("#sim-wait", S.s + 0.18, 0.3);
+      gsap.set(["#sim-typed .ch", "#sc-sim .player"], { opacity: 0 });
+      D.typed.forEach((t, i) => tl.set("#sc" + i, { opacity: 1 }, t));
+      tl.set("#sim-ph", { opacity: 0 }, D.typed[0]);
+      tl.fromTo("#sc-sim .player", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power3.out", ...IR }, S.gen);
+      tl.set("#sim-wait", { opacity: 0 }, S.gen);
+      for (let i = 0; i < D.bars1.length; i++) {
+        tl.fromTo("#sb" + i, { scaleY: 0.08 }, { scaleY: 1, duration: 0.22, ease: "power2.out", ...IR }, S.gen + 0.1 + i * 0.012);
+      }
+
+      // ---------- tela cheia: cards ----------
+      const C = D.cards;
+      slideIn("#cd-proj", C.proj, 0.3);
+      gsap.set(["#cd-proj-r", "#cd-piper-r", "#tag-novo"], { opacity: 0 });
+      slideIn("#cd-proj-r", C.projR, 0.28);
+      slideIn("#cd-piper", C.piper, 0.3);
+      slideIn("#cd-piper-r", C.piperR, 0.28);
+      slideIn("#cd-novo", C.novo, 0.3);
+      pop("#tag-novo", C.novoTag, 0.28);
+      pop("#c-follow", C.follow, 0.36);
+
+      // ---------- legenda palavra a palavra ----------
+      gsap.set([".cg", ".cw"], { opacity: 0 });
+      D.caps.forEach((g, gi) => {
+        tl.set("#g" + gi, { opacity: 1 }, g.t0);
+        g.w.forEach((w, wi) => {
+          tl.fromTo("#w" + gi + "_" + wi, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out", ...IR }, w.t);
+        });
+        tl.set("#g" + gi, { opacity: 0 }, g.t1);
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

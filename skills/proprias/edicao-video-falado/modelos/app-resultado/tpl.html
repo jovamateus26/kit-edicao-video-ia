@@ -1,0 +1,269 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[
+    {"id":"handle","type":"string","label":"@ da rede (CTA)","default":"@seu_perfil"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Locutor IA com Pocket TTS — Ep. 10</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0d10; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden; background: #0b0d10;
+        color: #e8eaed; font-family: "Montserrat", sans-serif;
+        --mint: #5eead4; --win: #14171c; --line: #2a2f37; --ink: #0b0d10; --red: #f87171; --dim: #6b7480; --sub: #aab2bc;
+      }
+      .ico { width: 1em; height: 1em; flex: none; display: block; }
+
+      /* ---------- câmera (rosto / tomada do spot) ---------- */
+      #cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 50% 46%; z-index: 0; }
+      #fala { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+      #split-bg { position: absolute; left: 0; top: 0; width: 1080px; height: 1050px; background: #0b0d10;
+        border-bottom: 3px solid var(--line); z-index: 1; }
+
+      /* ---------- painel do app (split) ---------- */
+      #panel { position: absolute; left: 40px; top: 70px; width: 1000px; height: 830px; z-index: 2; }
+      .kick { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 14px; height: 40px;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 30px; letter-spacing: 0.12em; color: var(--mint);
+        white-space: nowrap; }
+      .kick .dot { width: 16px; height: 16px; border-radius: 50%; background: var(--mint); flex: none; }
+      .kick.red { color: var(--red); }
+      .kick.red .dot { background: var(--red); }
+      .win { position: absolute; left: 0; top: 62px; width: 1000px; height: 768px; border-radius: 26px; overflow: hidden;
+        background: var(--win); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
+      .win-bar { height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 24px; border-bottom: 2px solid var(--line); }
+      .win-bar i { width: 16px; height: 16px; border-radius: 50%; background: #3a404a; display: block; }
+      .win-bar span { margin-left: 14px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; color: var(--sub); }
+      .inner { position: absolute; left: 0; top: 64px; width: 1000px; height: 700px; overflow: hidden; background: #0f1115; }
+      #scr { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+      #tela { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+      .hl { position: absolute; border: 3px solid var(--mint); border-radius: 8px; background: rgba(94,234,212,0.10); }
+
+      /* ---------- tela cheia: cards e chips ---------- */
+      .ov { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+      .card { position: absolute; left: 60px; top: 150px; padding: 26px 34px 30px; border-radius: 30px;
+        background: rgba(20,23,28,0.94); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+      .card-k { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.14em; color: var(--mint); }
+      .card-t { margin-top: 8px; font-weight: 900; font-size: 64px; letter-spacing: -0.03em; line-height: 1.04; color: #f4f6f8;
+        display: flex; align-items: center; gap: 20px; white-space: nowrap; }
+      .card-t .old { color: var(--dim); text-decoration: line-through; text-decoration-thickness: 5px; }
+      .card-t .arr { color: var(--sub); font-weight: 700; }
+      .card-t .new { color: var(--mint); }
+      .card-r { margin-top: 12px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 38px; color: #e8eaed; white-space: nowrap; }
+      .card-r .ico { font-size: 42px; }
+      .card-r b { color: var(--mint); font-weight: 900; }
+      .steps { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+      .step { display: flex; align-items: center; gap: 18px; font-weight: 700; font-size: 40px; color: var(--sub); white-space: nowrap; }
+      .box { width: 46px; height: 46px; border-radius: 12px; border: 3px solid var(--line); flex: none; display: flex;
+        align-items: center; justify-content: center; }
+      .step .ok { width: 30px; height: 30px; }
+      .step .tag { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; padding: 6px 12px; border-radius: 10px;
+        background: rgba(94,234,212,0.12); color: var(--mint); border: 2px solid rgba(94,234,212,0.5); letter-spacing: 0.06em; }
+      .slot { position: absolute; left: 0; right: 0; top: 1214px; display: flex; justify-content: center; }
+      .chip { display: inline-flex; align-items: center; gap: 18px; padding: 16px 34px 16px 18px; border-radius: 999px;
+        background: rgba(20,23,28,0.95); border: 2px solid rgba(94,234,212,0.7); font-weight: 700; font-size: 40px; color: #e8eaed;
+        white-space: nowrap; box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+      .chip .h, .chip b { color: var(--mint); font-weight: 900; }
+      .chip .mono { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 38px; }
+      .plus { width: 64px; height: 64px; border-radius: 50%; background: var(--mint); display: flex; align-items: center; justify-content: center; flex: none; }
+      .plus .ico { font-size: 38px; }
+      .top { position: absolute; left: 0; right: 0; top: 150px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+      .ia-chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 28px; border-radius: 18px;
+        background: rgba(11,13,16,0.92); border: 2px solid rgba(94,234,212,0.7); font-family: "JetBrains Mono", monospace;
+        font-weight: 700; font-size: 34px; letter-spacing: 0.1em; color: var(--mint); white-space: nowrap; }
+      .ia-chip .ico { font-size: 40px; }
+      .ia-sub { padding: 8px 18px; border-radius: 12px; background: rgba(11,13,16,0.85); font-family: "JetBrains Mono", monospace;
+        font-weight: 700; font-size: 26px; letter-spacing: 0.12em; color: var(--sub); }
+
+      /* ---------- legenda ---------- */
+      #caps-w { z-index: 5; }
+      #caps { position: absolute; left: 40px; right: 40px; top: 0; height: 110px; transform-origin: 50% 50%; }
+      .cg { position: absolute; left: 0; right: 0; top: 0; height: 110px; display: flex; justify-content: center; align-items: center;
+        column-gap: 0.26em; font-weight: 900; font-size: 76px; line-height: 1; letter-spacing: -0.015em; white-space: nowrap; }
+      .cw { display: inline-block; color: #ffffff;
+        text-shadow: 0 0 2px #0b0d10, 3px 3px 0 #0b0d10, -3px 3px 0 #0b0d10, 3px -3px 0 #0b0d10, -3px -3px 0 #0b0d10,
+          0 4px 0 #0b0d10, 4px 0 0 #0b0d10, -4px 0 0 #0b0d10, 0 -4px 0 #0b0d10, 0 10px 24px rgba(0,0,0,0.55); }
+      .cw.k { color: var(--mint); }
+      .cg.ai .cw { color: var(--mint); font-style: italic; }
+      .cw.r, .cg.ai .cw.r { color: var(--red); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="%%DUR%%" data-width="1080" data-height="1920" data-fps="30">
+      <div id="cam">
+        <video id="fala" class="clip" src="assets/footage/fala.mp4" data-start="0" data-duration="%%DUR%%" data-track-index="0" playsinline data-has-audio="true"></video>
+      </div>
+      <div id="split-bg"></div>
+
+      <!-- painel do app: a gravação de tela cortada no mesmo ritmo da fala, com recorte por cena -->
+      <div id="panel">
+%%KICKS%%
+        <div class="win">
+          <div class="win-bar"><i></i><i></i><i></i><span>localhost:3000 · Locutor IA</span></div>
+          <div class="inner">
+            <div id="scr">
+              <video id="tela" class="clip" src="assets/footage/tela.mp4" data-start="0" data-duration="%%DUR%%" data-track-index="1" muted playsinline></video>
+              <div class="hl" id="hl-fm" style="left: 384px; top: %%HL_FM_Y%%px; width: 470px; height: 40px"></div>
+              <div class="hl" id="hl-wa" style="left: 384px; top: %%HL_WA_Y%%px; width: 470px; height: 40px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- gancho e fecho: tomada do celular filmando o app tocando o spot -->
+      <div id="ov-ia" class="ov clip" data-start="0" data-duration="%%IA1_D%%" data-track-index="2">
+        <div class="top"><div class="ia-chip" id="ia1"><svg viewBox="0 0 24 24" class="ico"><rect x="4" y="7" width="16" height="12" rx="3" fill="none" stroke="#5eead4" stroke-width="2"/><circle cx="9.5" cy="13" r="1.6" fill="#5eead4"/><circle cx="14.5" cy="13" r="1.6" fill="#5eead4"/><path d="M12 7V4M9 4h6" stroke="#5eead4" stroke-width="2" stroke-linecap="round"/></svg>VOZ 100% GERADA POR IA</div>
+          <div class="ia-sub" id="ia1s">POCKET TTS · RODANDO NA CPU</div></div>
+      </div>
+      <div id="ov-ia2" class="ov clip" data-start="%%IA2_S%%" data-duration="%%IA2_D%%" data-track-index="2">
+        <div class="top"><div class="ia-chip" id="ia2"><svg viewBox="0 0 24 24" class="ico"><rect x="4" y="7" width="16" height="12" rx="3" fill="none" stroke="#5eead4" stroke-width="2"/><circle cx="9.5" cy="13" r="1.6" fill="#5eead4"/><circle cx="14.5" cy="13" r="1.6" fill="#5eead4"/><path d="M12 7V4M9 4h6" stroke="#5eead4" stroke-width="2" stroke-linecap="round"/></svg>VOZ GERADA POR IA</div></div>
+      </div>
+
+      <!-- tela cheia: cards -->
+      <div id="ov-proj" class="ov clip" data-start="%%PROJ_S%%" data-duration="%%PROJ_D%%" data-track-index="3">
+        <div class="card" id="cd-proj">
+          <div class="card-k">SEGUINDO NO PROJETO</div>
+          <div class="card-t">Locutor com IA</div>
+          <div class="card-r" id="cd-proj-r"><svg viewBox="0 0 24 24" class="ico"><circle cx="12" cy="12" r="2.4" fill="#5eead4"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round"/></svg><span>pra rádio <b>Exemplo FM</b></span></div>
+        </div>
+      </div>
+
+      <div id="ov-motor" class="ov clip" data-start="%%MOTOR_S%%" data-duration="%%MOTOR_D%%" data-track-index="3">
+        <div class="card" id="cd-motor">
+          <div class="card-k">MOTOR DE VOZ</div>
+          <div class="card-t"><span class="old" id="m-old">Piper</span><span class="arr">→</span><span class="new" id="m-new">Pocket TTS</span></div>
+          <div class="card-r" id="cd-motor-r"><svg viewBox="0 0 24 24" class="ico"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="#5eead4"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round"/></svg><span>voz bem mais <b>natural</b></span></div>
+        </div>
+      </div>
+
+      <div id="ov-steps" class="ov clip" data-start="%%STEPS_S%%" data-duration="%%STEPS_D%%" data-track-index="3">
+        <div class="card" id="cd-steps">
+          <div class="card-k">LOCUTOR IA · ANDAMENTO</div>
+          <div class="steps">
+            <div class="step" id="st1"><span class="box"><svg viewBox="0 0 24 24" class="ok"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0b0d10" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Motor de voz · Pocket TTS</div>
+            <div class="step" id="st2"><span class="box"><svg viewBox="0 0 24 24" class="ok"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0b0d10" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Dicionário fonético</div>
+            <div class="step" id="st3"><span class="box"></span>Subir a infraestrutura <span class="tag" id="tg3">AGORA</span></div>
+            <div class="step" id="st4"><span class="box"></span>Integração com WhatsApp <span class="tag" id="tg4">PRÓXIMO</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- chips -->
+      <div id="ov-rule" class="ov clip" data-start="%%RULE_S%%" data-duration="%%RULE_D%%" data-track-index="4">
+        <div class="slot"><div class="chip" id="c-rule"><span class="plus"><svg viewBox="0 0 24 24" class="ico"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#0b0d10" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="mono">whatsapp → <b>uatizape</b></span></div></div>
+      </div>
+      <div id="ov-nome" class="ov clip" data-start="%%NOME_S%%" data-duration="%%NOME_D%%" data-track-index="4">
+        <div class="slot"><div class="chip" id="c-nome"><span class="plus"><svg viewBox="0 0 24 24" class="ico"><path d="M4 5.5h16v10.5H10l-4.5 3.5V16H4z" fill="none" stroke="#0b0d10" stroke-width="2.6" stroke-linejoin="round"/></svg></span><span>Sugere um <b>nome</b> nos comentários</span></div></div>
+      </div>
+      <div id="ov-follow" class="ov clip" data-start="%%FOL_S%%" data-duration="%%FOL_D%%" data-track-index="4">
+        <div class="slot"><div class="chip" id="c-follow"><span class="plus"><svg viewBox="0 0 24 24" class="ico"><path d="M12 5v14M5 12h14" stroke="#0b0d10" stroke-width="3.2" stroke-linecap="round"/></svg></span><div id="end-follow">Segue <span class="h" data-var-text="handle">@seu_perfil</span> pra não perder</div></div></div>
+      </div>
+
+      <!-- legenda palavra a palavra -->
+      <div id="caps-w" class="ov clip" data-start="0" data-duration="%%DUR%%" data-track-index="5">
+        <div id="caps">
+%%CAPS_DOM%%
+        </div>
+      </div>
+
+%%SFX%%
+    </div>
+    <script>
+      const D = %%DATA%%;
+      const tl = gsap.timeline({ paused: true });
+      const IR = { immediateRender: false };
+      function pop(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: d, ease: "back.out(1.7)", ...IR }, t);
+      }
+      function slideIn(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, x: -36 }, { opacity: 1, x: 0, duration: d, ease: "power3.out", ...IR }, t);
+      }
+
+      // ---------- layout por corte: split (app + rosto embaixo) / tela cheia com punch-in alternado ----------
+      const L = {
+        split: { y: 450, s: 1, cap: 912, cs: 0.86, bg: 1 },
+        full: { y: 0, s: 1, cap: 1352, cs: 1, bg: 0 },
+        take: { y: 0, s: 1, cap: 1352, cs: 1, bg: 0 },
+      };
+      gsap.set("#panel", { opacity: 0 });
+      gsap.set("#split-bg", { opacity: 0 });
+      D.cam.forEach(([t, mode, z]) => {
+        const m = L[mode];
+        tl.set("#cam", { y: m.y, scale: z }, t);
+        tl.set("#split-bg", { opacity: m.bg }, t);
+        tl.set("#panel", { opacity: m.bg }, t);
+        tl.set("#caps", { y: m.cap, scale: m.cs }, t);
+      });
+
+      // ---------- painel: kicker e recorte da tela por cena (sem animação: troca seca no corte) ----------
+      gsap.set(".kick", { opacity: 0 });
+      D.kicks.forEach((k, i) => {
+        tl.set("#kk" + i, { opacity: 1 }, k.t0);
+        tl.set("#kk" + i, { opacity: 0 }, k.t1);
+      });
+      D.crops.forEach((c) => {
+        const s = 1000 / c.w;
+        if (c.d) tl.to("#scr", { x: -c.x * s, y: -c.y * s, scale: s, duration: c.d, ease: "power2.inOut" }, c.t);
+        else tl.set("#scr", { x: -c.x * s, y: -c.y * s, scale: s }, c.t);
+      });
+      gsap.set([".hl"], { opacity: 0 });
+      D.hls.forEach((h) => {
+        tl.fromTo("#" + h.id, { opacity: 0 }, { opacity: 1, duration: 0.2, ...IR }, h.t0);
+        tl.set("#" + h.id, { opacity: 0 }, h.t1);
+      });
+
+      // ---------- cards e chips ----------
+      const C = D.cues;
+      pop("#ia1", 0.05, 0.32);
+      pop("#ia1s", 0.2, 0.3);
+      pop("#ia2", C.ia2 + 0.05, 0.3);
+      slideIn("#cd-proj", C.proj, 0.3);
+      gsap.set(["#cd-proj-r", "#cd-motor-r"], { opacity: 0 });
+      slideIn("#cd-proj-r", C.projR, 0.28);
+      slideIn("#cd-motor", C.motor, 0.3);
+      gsap.set("#m-new", { opacity: 0 });
+      pop("#m-new", C.motorNew, 0.28);
+      slideIn("#cd-motor-r", C.motorR, 0.28);
+      slideIn("#cd-steps", C.steps, 0.3);
+      gsap.set(["#st1", "#st2", "#st3", "#st4", "#tg3", "#tg4"], { opacity: 0 });
+      ["st1", "st2", "st3", "st4"].forEach((s, i) => slideIn("#" + s, C.steps + 0.12 + i * 0.1, 0.26));
+      gsap.set(".step .ok", { opacity: 0 });
+      function done(id, t) {
+        tl.set("#" + id, { color: "#f4f6f8" }, t);
+        tl.set("#" + id + " .box", { backgroundColor: "#5eead4", borderColor: "#5eead4" }, t);
+        tl.fromTo("#" + id + " .ok", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(2)", ...IR }, t);
+      }
+      function now(id, t) {
+        tl.set("#" + id, { color: "#f4f6f8" }, t);
+        tl.set("#" + id + " .box", { borderColor: "#5eead4" }, t);
+      }
+      done("st1", C.pronto);
+      done("st2", C.pronto + 0.15);
+      now("st3", C.infra);
+      pop("#tg3", C.infra, 0.26);
+      now("st4", C.integ);
+      pop("#tg4", C.integ, 0.26);
+      pop("#c-rule", C.rule, 0.32);
+      pop("#c-nome", C.nome, 0.32);
+      pop("#c-follow", C.follow, 0.34);
+
+      // ---------- legenda palavra a palavra ----------
+      gsap.set([".cg", ".cw"], { opacity: 0 });
+      D.caps.forEach((g, gi) => {
+        tl.set("#g" + gi, { opacity: 1 }, g.t0);
+        g.w.forEach((w, wi) => {
+          tl.fromTo("#w" + gi + "_" + wi, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out", ...IR }, w.t);
+        });
+        tl.set("#g" + gi, { opacity: 0 }, g.t1);
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

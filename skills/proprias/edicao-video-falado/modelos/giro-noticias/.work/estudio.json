@@ -1,0 +1,5 @@
+{
+ "climas": {"n1": "alerta", "n2": "violeta", "n3": "energia", "n4": "ambar", "n5": "apocalipse", "cta": "marca"},
+ "topicos": [[0, "n1"], [13.167, "n2"], [25.033, "n3"], [36.1, "n4"], [46.933, "n5"], [59.6, "cta"]],
+ "planos": {"aberto": [], "A": [450, 350], "B": [520, 320], "zmax": 2.0}
+}

@@ -1,0 +1,10 @@
+# Skills do HyperFrames (HeyGen, Apache-2.0) que o instalar.sh / instalar.ps1 baixam de github.com/heygen-com/hyperframes.
+# Uma linha por origem: <commit ou tag> <pasta no repositório> <skills...>
+#
+# Atuais, na tag do CLI fixado nos modelos (npx hyperframes@0.8.185):
+v0.8.185 skills hyperframes hyperframes-cli hyperframes-registry media-use figma remotion-to-hyperframes slideshow
+# Doutrina de movimento e legenda (pasta interna do repositório, mesma tag):
+v0.8.185 .agents/skills captions-overlay cut-the-curve motion-doctrine seam-craft oversized-cursor changelog-video
+# Aposentadas pelo HyperFrames em 21/10/2026 (o conteúdo foi para a skill hyperframes e para a media-use). O kit ainda
+# cita estas (o catálogo de 35 legendas da embedded-captions, por exemplo); este é o último commit que as tem:
+207c8a4daf6480d697f203784f1fd422727569e3 skills embedded-captions faceless-explainer general-video hyperframes-animation hyperframes-audio hyperframes-core hyperframes-creative hyperframes-keyframes hyperframes-studio motion-graphics music-to-video pr-to-video product-launch-video talking-head-recut

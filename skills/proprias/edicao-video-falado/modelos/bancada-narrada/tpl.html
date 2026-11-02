@@ -1,0 +1,226 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[
+    {"id":"handle","type":"string","label":"@ da rede (CTA)","default":"@seu_perfil"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Notebook vira servidor? Parte 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0b0d10; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden; background: #0b0d10;
+        color: #e8eaed; font-family: "Montserrat", sans-serif;
+        --mint: #5eead4; --win: #14171c; --line: #2a2f37; --ink: #0b0d10; --red: #f87171; --dim: #6b7480; --sub: #aab2bc;
+      }
+      .ico { width: 1em; height: 1em; flex: none; display: block; }
+
+      /* ---------- câmera ---------- */
+      #cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 50% 46%; z-index: 0; }
+      #fala { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+
+      /* ---------- overlays ---------- */
+      .ov { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+      .card { position: absolute; left: 60px; top: 150px; padding: 26px 34px 30px; border-radius: 30px;
+        background: rgba(20,23,28,0.94); border: 2px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+      .card.low { top: 1000px; }
+      .card.err { border-color: rgba(248,113,113,0.75); }
+      .card-k { display: flex; align-items: center; gap: 14px; font-family: "JetBrains Mono", monospace; font-weight: 700;
+        font-size: 28px; letter-spacing: 0.14em; color: var(--mint); white-space: nowrap; }
+      .card-k .dot { width: 14px; height: 14px; border-radius: 50%; background: currentColor; flex: none; }
+      .card-k.red { color: var(--red); }
+      .card-t { margin-top: 8px; font-weight: 900; font-size: 64px; letter-spacing: -0.03em; line-height: 1.06; color: #f4f6f8;
+        display: flex; align-items: center; gap: 20px; white-space: nowrap; }
+      .card-t.mint { color: var(--mint); }
+      .card-t.red { color: var(--red); }
+      .card-t.mono { font-family: "JetBrains Mono", monospace; font-weight: 700; letter-spacing: 0; font-size: 60px; }
+      .card-t .old { position: relative; display: inline-block; }
+      .card-t .strike { position: absolute; left: -4px; right: -4px; top: 52%; height: 6px; border-radius: 3px; background: var(--red);
+        transform-origin: 0 50%; }
+      .card-t .arr { color: var(--sub); font-weight: 700; }
+      .card-t .new { color: var(--mint); }
+      .card-r { margin-top: 12px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 38px; color: #e8eaed; white-space: nowrap; }
+      .card-r .ico { font-size: 42px; }
+      .card-r b { color: var(--mint); font-weight: 900; }
+      .rows { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; }
+      .row { display: flex; align-items: baseline; gap: 22px; white-space: nowrap; }
+      .row .lb { width: 132px; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 28px; letter-spacing: 0.12em; color: var(--dim); }
+      .row .vl { font-weight: 900; font-size: 50px; letter-spacing: -0.02em; color: #f4f6f8; }
+      .row .vl b { color: var(--mint); font-weight: 900; }
+
+      /* selo de etapa no topo */
+      .pill { position: absolute; left: 60px; top: 150px; display: inline-flex; align-items: center; gap: 16px; padding: 14px 26px;
+        border-radius: 18px; background: rgba(11,13,16,0.92); border: 2px solid rgba(94,234,212,0.7);
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 32px; letter-spacing: 0.08em; color: var(--mint); white-space: nowrap; }
+      .pill .n { color: var(--sub); }
+      .pill .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--mint); flex: none; }
+
+      /* chips embaixo */
+      .slot { position: absolute; left: 0; right: 0; top: 1214px; display: flex; justify-content: center; }
+      .chip { display: inline-flex; align-items: center; gap: 18px; padding: 16px 34px 16px 18px; border-radius: 999px;
+        background: rgba(20,23,28,0.95); border: 2px solid rgba(94,234,212,0.7); font-weight: 700; font-size: 40px; color: #e8eaed;
+        white-space: nowrap; box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+      .chip .h, .chip b { color: var(--mint); font-weight: 900; }
+      .chip .mono { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 36px; letter-spacing: 0.08em; }
+      .plus { width: 64px; height: 64px; border-radius: 50%; background: var(--mint); display: flex; align-items: center; justify-content: center; flex: none; }
+      .plus .ico { font-size: 38px; }
+      #flash { position: absolute; inset: 0; box-shadow: inset 0 0 160px 40px rgba(248,113,113,0.85); }
+
+      /* ---------- legenda ---------- */
+      #caps-w { z-index: 5; }
+      #caps { position: absolute; left: 40px; right: 40px; top: 1352px; height: 110px; }
+      .cg { position: absolute; left: 0; right: 0; top: 0; height: 110px; display: flex; justify-content: center; align-items: center;
+        column-gap: 0.26em; font-weight: 900; font-size: 76px; line-height: 1; letter-spacing: -0.015em; white-space: nowrap; }
+      .cw { display: inline-block; color: #ffffff;
+        text-shadow: 0 0 2px #0b0d10, 3px 3px 0 #0b0d10, -3px 3px 0 #0b0d10, 3px -3px 0 #0b0d10, -3px -3px 0 #0b0d10,
+          0 4px 0 #0b0d10, 4px 0 0 #0b0d10, -4px 0 0 #0b0d10, 0 -4px 0 #0b0d10, 0 10px 24px rgba(0,0,0,0.55); }
+      .cw.k { color: var(--mint); }
+      .cw.r { color: var(--red); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="%%DUR%%" data-width="1080" data-height="1920" data-fps="30">
+      <div id="cam">
+        <video id="fala" class="clip" src="assets/footage/fala.mp4" data-start="0" data-duration="%%DUR%%" data-track-index="0" playsinline data-has-audio="true"></video>
+      </div>
+
+      <!-- gancho: tela preta do Boot Manager -->
+      <div id="ov-hook" class="ov clip" data-start="0" data-duration="%%HOOK_D%%" data-track-index="2">
+        <div class="card low" id="cd-hook">
+          <div class="card-k red"><span class="dot"></span>ERRO NO BOOT DO WINDOWS</div>
+          <div class="card-t" id="hk1">O notebook morreu.</div>
+          <div class="card-t mint" id="hk2">Vira servidor Linux?</div>
+        </div>
+      </div>
+
+      <!-- specs (close no adesivo) -->
+      <div id="ov-specs" class="ov clip" data-start="%%SPECS_S%%" data-duration="%%SPECS_D%%" data-track-index="3">
+        <div class="card" id="cd-specs">
+          <div class="card-k">O PACIENTE · NOTEBOOK ANTIGO</div>
+          <div class="rows">
+            <div class="row" id="sp1"><span class="lb">CPU</span><span class="vl">Pentium N3710</span></div>
+            <div class="row" id="sp2"><span class="lb">DISCO</span><span class="vl"><b>32 GB</b></span></div>
+            <div class="row" id="sp3"><span class="lb">RAM</span><span class="vl"><b>4 GB</b></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- selo de etapa (troca seca no corte) -->
+      <div id="ov-steps" class="ov clip" data-start="0" data-duration="%%DUR%%" data-track-index="4">
+%%PILLS%%
+      </div>
+
+      <!-- Proxmox × Ubuntu -->
+      <div id="ov-os" class="ov clip" data-start="%%OS_S%%" data-duration="%%OS_D%%" data-track-index="3">
+        <div class="card" id="cd-os">
+          <div class="card-k">05 · QUAL SISTEMA?</div>
+          <div class="card-t"><span class="old" id="os-old">Proxmox<span class="strike" id="os-strike"></span></span><span class="arr" id="os-arr">→</span><span class="new" id="os-new">Ubuntu 26</span></div>
+          <div class="card-r" id="os-r"><svg viewBox="0 0 24 24" class="ico"><path d="M12 3.5l7.5 3v5.2c0 4.4-3.1 7.6-7.5 8.8-4.4-1.2-7.5-4.4-7.5-8.8V6.5z" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linejoin="round"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8" fill="none" stroke="#5eead4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Linux pra <b>pesar menos</b></span></div>
+        </div>
+      </div>
+
+      <!-- hostname: liga à série do canal -->
+      <div id="ov-host" class="ov clip" data-start="%%HOST_S%%" data-duration="%%HOST_D%%" data-track-index="3">
+        <div class="card" id="cd-host">
+          <div class="card-k">07 · NOME DA MÁQUINA</div>
+          <div class="card-t mono" id="host-t">servidor 02</div>
+          <div class="card-r" id="host-r"><svg viewBox="0 0 24 24" class="ico"><rect x="4" y="4" width="16" height="6.5" rx="1.6" fill="none" stroke="#5eead4" stroke-width="2.2"/><rect x="4" y="13.5" width="16" height="6.5" rx="1.6" fill="none" stroke="#5eead4" stroke-width="2.2"/><circle cx="8" cy="7.2" r="1.3" fill="#5eead4"/><circle cx="8" cy="16.8" r="1.3" fill="#5eead4"/></svg><span>o 01 é o nosso <b>PROJETO</b></span></div>
+        </div>
+      </div>
+
+      <!-- a falha -->
+      <div id="ov-err" class="ov clip" data-start="%%ERR_S%%" data-duration="%%ERR_D%%" data-track-index="3">
+        <div id="flash"></div>
+        <div class="card err" id="cd-err">
+          <div class="card-k red"><span class="dot"></span>FALHA NA INSTALAÇÃO</div>
+          <div class="card-t red" id="err-t">Algo deu errado</div>
+        </div>
+      </div>
+
+      <!-- fecho -->
+      <div id="ov-follow" class="ov clip" data-start="%%FOL_S%%" data-duration="%%FOL_D%%" data-track-index="5">
+        <div class="slot"><div class="chip" id="c-follow"><span class="plus"><svg viewBox="0 0 24 24" class="ico"><path d="M12 5v14M5 12h14" stroke="#0b0d10" stroke-width="3.2" stroke-linecap="round"/></svg></span><div id="end-follow">Segue <span class="h" data-var-text="handle">@seu_perfil</span> pra não perder</div></div></div>
+      </div>
+
+      <!-- legenda palavra a palavra -->
+      <div id="caps-w" class="ov clip" data-start="0" data-duration="%%DUR%%" data-track-index="6">
+        <div id="caps">
+%%CAPS_DOM%%
+        </div>
+      </div>
+
+%%SFX%%
+    </div>
+    <script>
+      const D = %%DATA%%;
+      const tl = gsap.timeline({ paused: true });
+      const IR = { immediateRender: false };
+      function pop(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: d, ease: "back.out(1.7)", ...IR }, t);
+      }
+      function slideIn(sel, t, d = 0.3) {
+        tl.fromTo(sel, { opacity: 0, x: -36 }, { opacity: 1, x: 0, duration: d, ease: "power3.out", ...IR }, t);
+      }
+
+      // ---------- câmera: punch-in alternado a cada corte dentro do mesmo clipe (esconde o jump cut) ----------
+      D.cam.forEach(([t, z]) => tl.set("#cam", { scale: z }, t));
+
+      // ---------- selo de etapa: troca seca no corte ----------
+      gsap.set(".pill", { opacity: 0 });
+      D.pills.forEach((p, i) => {
+        tl.fromTo("#pl" + i, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.22, ease: "power3.out", ...IR }, p.t0);
+        tl.set("#pl" + i, { opacity: 0 }, p.t1);
+      });
+
+      // ---------- cards ----------
+      const C = D.cues;
+      pop("#cd-hook", 0.05, 0.3);
+      gsap.set("#hk2", { opacity: 0 });
+      slideIn("#hk2", C.hook2, 0.28);
+
+      slideIn("#cd-specs", C.specs, 0.3);
+      gsap.set(["#sp1", "#sp2", "#sp3"], { opacity: 0 });
+      slideIn("#sp1", C.specs + 0.15, 0.26);
+      slideIn("#sp2", C.disk, 0.26);
+      slideIn("#sp3", C.ram, 0.26);
+
+      slideIn("#cd-os", C.os, 0.3);
+      gsap.set(["#os-arr", "#os-new", "#os-r"], { opacity: 0 });
+      tl.fromTo("#os-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.25, ease: "power2.out", ...IR }, C.strike);
+      tl.to("#os-old", { color: "#6b7480", duration: 0.2, ...IR }, C.strike);
+      tl.fromTo("#os-arr", { opacity: 0 }, { opacity: 1, duration: 0.2, ...IR }, C.ubuntu - 0.05);
+      pop("#os-new", C.ubuntu, 0.3);
+      slideIn("#os-r", C.strike + 0.35, 0.26);
+
+      slideIn("#cd-host", C.host, 0.3);
+      gsap.set("#host-r", { opacity: 0 });
+      slideIn("#host-r", C.serie, 0.28);
+
+      slideIn("#cd-err", C.err, 0.3);
+      gsap.set(["#err-t", "#flash"], { opacity: 0 });
+      pop("#err-t", C.algo, 0.3);
+      tl.fromTo("#flash", { opacity: 0 }, { opacity: 1, duration: 0.08, ...IR }, C.algo);
+      tl.to("#flash", { opacity: 0, duration: 0.6, ease: "power2.out", ...IR }, C.algo + 0.12);
+
+      pop("#c-follow", C.follow, 0.34);
+
+      // ---------- legenda palavra a palavra ----------
+      gsap.set([".cg", ".cw"], { opacity: 0 });
+      D.caps.forEach((g, gi) => {
+        tl.set("#g" + gi, { opacity: 1 }, g.t0);
+        g.w.forEach((w, wi) => {
+          tl.fromTo("#w" + gi + "_" + wi, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out", ...IR }, w.t);
+        });
+        tl.set("#g" + gi, { opacity: 0 }, g.t1);
+      });
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

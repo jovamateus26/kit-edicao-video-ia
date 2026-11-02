@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Transcrição na GPU NVIDIA (cai para o CPU se não houver) com o modelo carregado uma vez só. Uso: wh file|snip|try|edit|status|stop ... (wh --help)
+# Ambiente fixo em ~/.cache/whisperd/venv (faster-whisper + cuBLAS/cuDNN do pip); criado sozinho no primeiro uso.
+# Linux, macOS (só CPU), WSL e Git Bash no Windows. No PowerShell/cmd do Windows, use o wh.cmd.
+set -euo pipefail
+D="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+V="${XDG_CACHE_HOME:-$HOME/.cache}/whisperd/venv"
+case "$(uname -s)" in
+  Darwin) GPU=() ;;                                              # Mac: sem CUDA, o whisperd usa o CPU
+  *) GPU=(nvidia-cublas-cu12 "nvidia-cudnn-cu12==9.*") ;;
+esac
+PY="$V/bin/python"; [ -x "$PY" ] || [ ! -e "$V/Scripts/python.exe" ] || PY="$V/Scripts/python.exe"   # Git Bash
+CHECK="import faster_whisper"; [ ${#GPU[@]} -gt 0 ] && CHECK="$CHECK, nvidia.cublas, nvidia.cudnn"
+if [ ! -x "$PY" ] || ! "$PY" -I -c "$CHECK" 2>/dev/null; then
+  echo "[wh] criando ambiente do whisper em $V (uma vez só)..." >&2
+  [ -x "$PY" ] || uv venv -q --python 3.12 "$V"
+  [ -x "$V/bin/python" ] && PY="$V/bin/python" || PY="$V/Scripts/python.exe"
+  VIRTUAL_ENV="$V" uv pip install -q faster-whisper numpy ${GPU[@]+"${GPU[@]}"}   # forma que o bash 3.2 do Mac aceita
+fi
+if [ -d "$V/lib" ]; then   # Linux: o CTranslate2 acha o cuBLAS/cuDNN do pip pelo LD_LIBRARY_PATH
+  SP="$("$PY" -I -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+  export LD_LIBRARY_PATH="$SP/nvidia/cublas/lib:$SP/nvidia/cudnn/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
+exec "$PY" -X utf8 -I "$D/wh.py" "$@"
